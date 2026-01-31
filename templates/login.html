@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MySQL Manager | Secure Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                        },
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                        'shake': 'shake 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '50%': { transform: 'translateX(5px)' },
+                            '75%': { transform: 'translateX(-5px)' },
+                        }
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .login-container {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+        }
+        
+        .input-field {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+        
+        .btn-connect {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            transition: all 0.2s ease;
+        }
+        
+        .btn-connect:hover {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            transform: translateY(-1px);
+        }
+        
+        .btn-connect:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body class="font-inter text-gray-200 flex items-center justify-center min-h-screen p-4">
+    <!-- Background subtle pattern -->
+    <div class="fixed inset-0 opacity-5" style="
+        background-image: linear-gradient(90deg, #3b82f6 1px, transparent 1px),
+                          linear-gradient(180deg, #3b82f6 1px, transparent 1px);
+        background-size: 30px 30px;
+    "></div>
+    
+    <!-- Main Login Form -->
+    <form method="post" id="loginForm" novalidate class="w-full max-w-sm relative z-10">
+        {% csrf_token %}
+        <div class="login-container rounded-xl p-6 animate-slide-up {% if error %}animate-shake{% endif %}">
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-500/20 rounded-lg mb-4">
+                    <i class="fas fa-lock text-lg text-blue-400"></i>
+                </div>
+                
+                <h1 class="text-xl font-semibold text-white mb-1">
+                    MySQL Database Login
+                </h1>
+                
+                <p class="text-xs text-gray-400 mb-3">
+                    Enter system password to establish connection
+                </p>
+                
+                <div class="flex items-center justify-center space-x-1">
+                    <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs text-gray-500">MySQL Server Running</span>
+                </div>
+            </div>
+            
+            <!-- Password Input -->
+            <div class="mb-5">
+                <label for="p" class="block text-gray-300 text-xs font-medium mb-2">
+                    <i class="fas fa-key mr-1 text-blue-400"></i>
+                    System Password
+                </label>
+                
+                <div class="relative">
+                    <input type="password" 
+                           name="p" 
+                           id="p" 
+                           autocomplete="current-password" 
+                           placeholder="Enter your password"
+                           class="input-field w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none">
+                    
+                    <button type="button" 
+                            onclick="togglePassword()" 
+                            class="absolute right-3 top-2.5 text-gray-500 hover:text-blue-400 transition-colors duration-200">
+                        <i class="fas fa-eye text-xs" id="toggleIcon"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center justify-between mt-1.5">
+                    <span class="text-xs text-gray-500">
+                        <i class="fas fa-shield-alt mr-1 text-xs"></i>
+                        Secure connection
+                    </span>
+                    <span class="text-xs text-blue-400">
+                        <i class="fas fa-lock mr-1 text-xs"></i>
+                        Encrypted
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Connect Button -->
+            <button type="submit" 
+                    class="btn-connect w-full py-2.5 rounded-lg text-white font-medium text-sm mb-4" 
+                    id="submitBtn">
+                <i class="fas fa-plug mr-2"></i>
+                Connect to Database
+            </button>
+            
+            <!-- Error Messages -->
+            {% if field_error %}
+                <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg animate-fade-in">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-400 mr-2 text-xs"></i>
+                        <p class="text-red-300 text-xs">{{ field_error }}</p>
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if error %}
+                <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg animate-fade-in">
+                    <div class="flex items-center">
+                        <i class="fas fa-times-circle text-red-400 mr-2 text-xs"></i>
+                        <p class="text-red-300 text-xs">{{ error }}</p>
+                    </div>
+                </div>
+            {% endif %}
+            
+           
+        </div>
+    </form>
+
+    <!-- Status Indicator (Bottom Right) -->
+    <div class="fixed bottom-4 right-4 bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg px-3 py-1.5 flex items-center space-x-2 z-20">
+        <div class="relative">
+            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div class="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-30" style="animation-duration: 2s;"></div>
+        </div>
+        <div class="text-xs">
+            <span class="text-gray-300">MySQL:3306</span>
+            <span class="text-green-400 ml-1">Listening</span>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('p');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Form validation
+        const loginForm = document.getElementById('loginForm');
+        const loginBox = document.querySelector('.login-container');
+        const submitBtn = document.getElementById('submitBtn');
+        const passwordInput = document.getElementById('p');
+        
+        // Only handle validation, don't prevent submission if valid
+        loginForm.addEventListener('submit', function(e) {
+            const passwordValue = passwordInput.value.trim();
+            
+            if (!passwordValue) {
+                e.preventDefault(); // Only prevent if invalid
+                
+                // Remove existing validation errors
+                const existingErrors = document.querySelectorAll('.validation-error');
+                existingErrors.forEach(error => error.remove());
+                
+                // Create validation error
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'validation-error mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg animate-fade-in';
+                errorDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-amber-400 mr-2 text-xs"></i>
+                        <p class="text-amber-300 text-xs">Please enter your system password</p>
+                    </div>
+                `;
+                
+                // Insert before the button
+                submitBtn.parentNode.insertBefore(errorDiv, submitBtn);
+                
+                // Add shake effect
+                loginBox.classList.add('animate-shake');
+                setTimeout(() => {
+                    loginBox.classList.remove('animate-shake');
+                }, 500);
+            } else {
+                // Show loading state but don't prevent form submission
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connecting...';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75');
+                // Let the form submit naturally
+            }
+        });
+        
+        // Auto-focus password input
+        document.addEventListener('DOMContentLoaded', function() {
+            passwordInput.focus();
+        });
+        
+        // Handle Enter key press - let it trigger the form's natural submit
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                // Trigger the form's submit event
+                loginForm.requestSubmit();
+            }
+        });
+        
+        // Reset button state if page reloads (in case of error)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                submitBtn.innerHTML = '<i class="fas fa-plug mr-2"></i>Connect to Database';
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75');
+            }
+        });
+        
+        // Reset on any input change (user correcting error)
+        passwordInput.addEventListener('input', function() {
+            const existingErrors = document.querySelectorAll('.validation-error');
+            existingErrors.forEach(error => error.remove());
+            
+            // Reset button if it's in loading state but form hasn't submitted
+            if (submitBtn.disabled && !passwordInput.value.trim()) {
+                submitBtn.innerHTML = '<i class="fas fa-plug mr-2"></i>Connect to Database';
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75');
+            }
+        });
+    </script>
+</body>
+
+</html>
