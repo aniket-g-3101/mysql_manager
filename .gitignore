@@ -60,3 +60,8 @@ build/
 *.tmp
 *.bak
 *.swp
+
+
+*.mp4
+*.mov
+*.avi
