@@ -1,300 +1,505 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MySQL Manager | Secure Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                        },
-                    },
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.4s ease-out forwards',
-                        'slide-up': 'slideUp 0.3s ease-out forwards',
-                        'shake': 'shake 0.5s ease-in-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        shake: {
-                            '0%, 100%': { transform: 'translateX(0)' },
-                            '25%': { transform: 'translateX(-5px)' },
-                            '50%': { transform: 'translateX(5px)' },
-                            '75%': { transform: 'translateX(-5px)' },
-                        }
-                    },
-                }
-            }
-        }
-    </script>
-    
+
     <style>
-        body {
+        /* ─── Reset & Base ─── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; cursor: none !important; }
+
+        html, body {
+            height: 100%;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
             font-family: 'Inter', sans-serif;
+            color: #e5e7eb;
+            overflow: hidden; /* login page, single viewport */
         }
-        
-        .login-container {
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+        /* ─── Custom Cursor ─── */
+        .custom-cursor {
+            position: fixed; width: 16px; height: 16px;
+            border: 1.5px solid rgba(59,130,246,0.85);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            mix-blend-mode: screen;
+            transition: width .08s ease, height .08s ease, background .08s ease, border-color .08s ease;
+            will-change: transform; backface-visibility: hidden; transform: translateZ(0);
+        }
+        .cursor-dot {
+            position: fixed; width: 4px; height: 4px;
+            background: #3b82f6; border-radius: 50%;
+            pointer-events: none; z-index: 9999; mix-blend-mode: screen;
+            will-change: transform; backface-visibility: hidden; transform: translateZ(0);
+        }
+
+        /* ─── Background Grid ─── */
+        .database-grid {
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            background-position: center;
+            z-index: 0; pointer-events: none;
+        }
+
+        /* ─── Static Data Nodes ─── */
+        .data-node {
+            position: fixed; width: 5px; height: 5px;
+            background: rgba(59,130,246,0.5); border-radius: 50%;
+            z-index: 2; box-shadow: 0 0 8px rgba(59,130,246,0.3);
+        }
+
+        /* ─── Centred Layout ─── */
+        .page-center {
+            position: relative; z-index: 10;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 24px;
+        }
+
+        /* ─── Login Card (mirrors card-hover) ─── */
+        .login-card {
+            width: 380px;
+            background: rgba(30,41,59,0.9);
             backdrop-filter: blur(8px);
+            border: 1px solid rgba(59,130,246,0.12);
+            border-radius: 16px;
+            padding: 40px 36px 36px;
+            transition: border-color .2s cubic-bezier(.4,0,.2,1), box-shadow .2s cubic-bezier(.4,0,.2,1);
+            animation: slideUp .35s cubic-bezier(.4,0,.2,1) both;
         }
-        
-        .input-field {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.2s ease;
+        .login-card:hover {
+            border-color: rgba(59,130,246,0.25);
+            box-shadow: 0 8px 20px rgba(59,130,246,0.15);
         }
-        
-        .input-field:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+
+        /* shake on error */
+        .login-card.shake {
+            animation: shake .45s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* ─── Keyframes ─── */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0);    }
+        }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%     { transform: translateX(-6px); }
+            40%     { transform: translateX(6px);  }
+            60%     { transform: translateX(-4px); }
+            80%     { transform: translateX(4px);  }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0);   }
+        }
+
+        /* ─── Card Header ─── */
+        .card-header { text-align: center; margin-bottom: 32px; }
+
+
+        .icon-wrap {
+            width: 56px; height: 56px; margin: 0 auto 18px;
+            background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(37,99,235,0.1));
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .icon-wrap i { font-size: 1.3rem; color: #60a5fa; }
+
+        .card-header h1 {
+            font-size: 1.25rem; font-weight: 600; color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .card-header p {
+            font-size: 0.78rem; color: #6b7280; line-height: 1.6;
+        }
+
+        /* server-status pill */
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            margin-top: 12px;
+            background: rgba(16,185,129,0.08);
+            border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 20px;
+            padding: 4px 10px;
+        }
+        .status-pill .ping-wrap {
+            position: relative; width: 7px; height: 7px;
+        }
+        .status-pill .ping-wrap .ping-outer {
+            position: absolute; inset: 0;
+            background: #10b981; border-radius: 50%;
+            animation: ping 2s cubic-bezier(0,0,.2,1) infinite;
+            opacity: .5;
+        }
+        .status-pill .ping-wrap .ping-inner {
+            position: relative; z-index: 1;
+            width: 7px; height: 7px;
+            background: #10b981; border-radius: 50%;
+        }
+        @keyframes ping {
+            to { transform: scale(2.2); opacity: 0; }
+        }
+        .status-pill span { font-size: 0.68rem; color: #6ee7b7; font-weight: 500; }
+
+        /* ─── Label ─── */
+        .field-label {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.78rem; font-weight: 600;
+            color: #9ca3af; text-transform: uppercase; letter-spacing: .4px;
+            margin-bottom: 10px;
+        }
+        .field-label i { color: #60a5fa; font-size: 0.72rem; }
+
+        /* ─── Input (mirrors input-premium) ─── */
+        .input-premium {
+            width: 100%;
+            background: rgba(30,41,59,0.7);
+            border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 8px;
+            padding: 13px 42px 13px 16px;
+            font-size: 0.85rem; color: #fff;
+            font-family: inherit;
+            transition: all .15s cubic-bezier(.4,0,.2,1);
+        }
+        .input-premium::placeholder { color: #4b5563; }
+        .input-premium:focus {
             outline: none;
+            border-color: rgba(59,130,246,0.7);
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+            background: rgba(30,41,59,0.9);
         }
-        
+
+        /* toggle eye button */
+        .toggle-pw {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            background: none; border: none;
+            color: #4b5563; cursor: pointer !important;
+            font-size: 0.8rem;
+            transition: color .15s ease;
+            padding: 4px;
+        }
+        .toggle-pw:hover { color: #60a5fa; }
+
+        .input-wrap { position: relative; }
+
+        /* helper row under input */
+        .input-helper {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 8px;
+        }
+        .input-helper span {
+            font-size: 0.65rem; color: #4b5563;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .input-helper span i { font-size: 0.6rem; }
+        .input-helper .helper-accent { color: #60a5fa; }
+
+        /* ─── Submit Button (mirrors btn btn-primary) ─── */
         .btn-connect {
-            background: linear-gradient(to right, #3b82f6, #2563eb);
-            transition: all 0.2s ease;
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 8px;
+            padding: 13px 20px;
+            color: #fff; font-size: 0.85rem; font-weight: 600;
+            font-family: inherit;
+            cursor: pointer !important;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all .15s cubic-bezier(.4,0,.2,1);
+            margin-top: 24px;
         }
-        
-        .btn-connect:hover {
-            background: linear-gradient(to right, #2563eb, #1d4ed8);
+        .btn-connect:hover:not(:disabled) {
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
         }
-        
-        .btn-connect:active {
-            transform: translateY(0);
+        .btn-connect:active:not(:disabled) { transform: translateY(0); }
+        .btn-connect:disabled { opacity: .6; }
+        .btn-connect i { font-size: 0.8rem; }
+
+        /* ─── Alerts ─── */
+        .alert-box {
+            border-radius: 8px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.78rem; line-height: 1.5;
+            animation: fadeIn .25s ease both;
+            margin-top: 16px;
         }
+        .alert-box .alert-icon {
+            flex-shrink: 0; width: 24px; height: 24px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* error variant */
+        .alert-error {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: #fca5a5;
+        }
+        .alert-error .alert-icon { background: rgba(239,68,68,0.15); color: #f87171; }
+
+        /* validation (amber) variant */
+        .alert-validation {
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.2);
+            color: #fcd34d;
+        }
+        .alert-validation .alert-icon { background: rgba(245,158,11,0.15); color: #fbbf24; }
+
+        /* ─── Bottom-right status indicator ─── */
+        .status-corner {
+            position: fixed; bottom: 20px; right: 20px; z-index: 20;
+            background: rgba(15,23,42,0.85);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(59,130,246,0.12);
+            border-radius: 8px;
+            padding: 6px 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .status-corner .sc-ping { position: relative; width: 7px; height: 7px; }
+        .status-corner .sc-ping .sc-outer {
+            position: absolute; inset: 0;
+            background: #10b981; border-radius: 50%;
+            animation: ping 2s cubic-bezier(0,0,.2,1) infinite; opacity: .4;
+        }
+        .status-corner .sc-ping .sc-inner {
+            position: relative; z-index: 1;
+            width: 7px; height: 7px;
+            background: #10b981; border-radius: 50%;
+        }
+        .status-corner .sc-text { font-size: 0.68rem; }
+        .status-corner .sc-text .sc-host { color: #9ca3af; }
+        .status-corner .sc-text .sc-live { color: #34d399; font-weight: 500; margin-left: 5px; }
+
+        /* ─── Utility ─── */
+        .text-xs-sm  { font-size: 0.7rem; }
     </style>
 </head>
+<body>
+    <!-- Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
 
-<body class="font-inter text-gray-200 flex items-center justify-center min-h-screen p-4">
-    <!-- Background subtle pattern -->
-    <div class="fixed inset-0 opacity-5" style="
-        background-image: linear-gradient(90deg, #3b82f6 1px, transparent 1px),
-                          linear-gradient(180deg, #3b82f6 1px, transparent 1px);
-        background-size: 30px 30px;
-    "></div>
-    
-    <!-- Main Login Form -->
-    <form method="post" id="loginForm" novalidate class="w-full max-w-sm relative z-10">
-        {% csrf_token %}
-        <div class="login-container rounded-xl p-6 animate-slide-up {% if error %}animate-shake{% endif %}">
-            <!-- Header -->
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-500/20 rounded-lg mb-4">
-                    <i class="fas fa-lock text-lg text-blue-400"></i>
-                </div>
-                
-                <h1 class="text-xl font-semibold text-white mb-1">
-                    MySQL Database Login
-                </h1>
-                
-                <p class="text-xs text-gray-400 mb-3">
-                    Enter system password to establish connection
-                </p>
-                
-                <div class="flex items-center justify-center space-x-1">
-                    <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="text-xs text-gray-500">MySQL Server Running</span>
-                </div>
-            </div>
-            
-            <!-- Password Input -->
-            <div class="mb-5">
-                <label for="p" class="block text-gray-300 text-xs font-medium mb-2">
-                    <i class="fas fa-key mr-1 text-blue-400"></i>
-                    System Password
-                </label>
-                
-                <div class="relative">
-                    <input type="password" 
-                           name="p" 
-                           id="p" 
-                           autocomplete="current-password" 
-                           placeholder="Enter your password"
-                           class="input-field w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none">
-                    
-                    <button type="button" 
-                            onclick="togglePassword()" 
-                            class="absolute right-3 top-2.5 text-gray-500 hover:text-blue-400 transition-colors duration-200">
-                        <i class="fas fa-eye text-xs" id="toggleIcon"></i>
-                    </button>
-                </div>
-                
-                <div class="flex items-center justify-between mt-1.5">
-                    <span class="text-xs text-gray-500">
-                        <i class="fas fa-shield-alt mr-1 text-xs"></i>
-                        Secure connection
-                    </span>
-                    <span class="text-xs text-blue-400">
-                        <i class="fas fa-lock mr-1 text-xs"></i>
-                        Encrypted
-                    </span>
-                </div>
-            </div>
-            
-            <!-- Connect Button -->
-            <button type="submit" 
-                    class="btn-connect w-full py-2.5 rounded-lg text-white font-medium text-sm mb-4" 
-                    id="submitBtn">
-                <i class="fas fa-plug mr-2"></i>
-                Connect to Database
-            </button>
-            
-            <!-- Error Messages -->
-            {% if field_error %}
-                <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg animate-fade-in">
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-triangle text-red-400 mr-2 text-xs"></i>
-                        <p class="text-red-300 text-xs">{{ field_error }}</p>
+    <!-- Background -->
+    <div class="database-grid"></div>
+    <div class="data-node" style="top:12%;left:8%;"></div>
+    <div class="data-node" style="top:75%;right:12%;"></div>
+    <div class="data-node" style="bottom:30%;left:18%;"></div>
+    <div class="data-node" style="top:45%;right:22%;"></div>
+    <div class="data-node" style="top:60%;left:55%;"></div>
+
+    <!-- Page centre -->
+    <div class="page-center">
+
+        <form method="post" id="loginForm" novalidate>
+            {% csrf_token %}
+            <div class="login-card" id="loginCard">
+
+                <!-- Header -->
+                <div class="card-header">
+                    <div class="icon-wrap">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h1>MySQL Database Login</h1>
+                    <p>Enter your system password to establish<br>a secure database connection</p>
+
+                    <div class="status-pill">
+                        <div class="ping-wrap">
+                            <div class="ping-outer"></div>
+                            <div class="ping-inner"></div>
+                        </div>
+                        <span>MySQL Server Running</span>
                     </div>
                 </div>
-            {% endif %}
-            
-            {% if error %}
-                <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg animate-fade-in">
-                    <div class="flex items-center">
-                        <i class="fas fa-times-circle text-red-400 mr-2 text-xs"></i>
-                        <p class="text-red-300 text-xs">{{ error }}</p>
+
+                <!-- Password field -->
+                <div class="field-group">
+                    <label class="field-label">
+                        <i class="fas fa-key"></i> System Password
+                    </label>
+
+                    <div class="input-wrap">
+                        <input type="password"
+                               name="p"
+                               id="passwordInput"
+                               autocomplete="current-password"
+                               placeholder="Enter your password"
+                               class="input-premium">
+
+                        <button type="button" class="toggle-pw" id="toggleBtn" onclick="togglePassword()" aria-label="Toggle password visibility">
+                            <i class="fas fa-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+
+                    <div class="input-helper">
+                        <span><i class="fas fa-shield-alt"></i> Secure connection</span>
+                        <span class="helper-accent"><i class="fas fa-lock"></i> Encrypted</span>
                     </div>
                 </div>
-            {% endif %}
-            
-           
-        </div>
-    </form>
 
-    <!-- Status Indicator (Bottom Right) -->
-    <div class="fixed bottom-4 right-4 bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg px-3 py-1.5 flex items-center space-x-2 z-20">
-        <div class="relative">
-            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            <div class="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-30" style="animation-duration: 2s;"></div>
+                <!-- Submit -->
+                <button type="submit" class="btn-connect" id="submitBtn">
+                    <i class="fas fa-plug"></i> Connect to Database
+                </button>
+
+                <!-- Django error messages (server-side) -->
+                {% if field_error %}
+                <div class="alert-box alert-error">
+                    <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <span>{{ field_error }}</span>
+                </div>
+                {% endif %}
+
+                {% if error %}
+                <div class="alert-box alert-error">
+                    <div class="alert-icon"><i class="fas fa-times-circle"></i></div>
+                    <span>{{ error }}</span>
+                </div>
+                {% endif %}
+
+                <!-- JS validation target -->
+                <div id="validationTarget"></div>
+
+            </div><!-- /login-card -->
+        </form>
+    </div><!-- /page-center -->
+
+    <!-- Bottom-right status -->
+    <div class="status-corner">
+        <div class="sc-ping">
+            <div class="sc-outer"></div>
+            <div class="sc-inner"></div>
         </div>
-        <div class="text-xs">
-            <span class="text-gray-300">MySQL:3306</span>
-            <span class="text-green-400 ml-1">Listening</span>
+        <div class="sc-text">
+            <span class="sc-host">MySQL:3306</span>
+            <span class="sc-live">Listening</span>
         </div>
     </div>
 
+    <!-- ─── Scripts ─── -->
     <script>
-        // Toggle password visibility
-        function togglePassword() {
-            const passwordInput = document.getElementById('p');
-            const toggleIcon = document.getElementById('toggleIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
+    (function(){
+        /* ───── Cursor ───── */
+        const cursor    = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        let mouseX=0, mouseY=0, cursorX=0, cursorY=0;
+
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            cursorDot.style.transform = `translate(${mouseX}px,${mouseY}px)`;
+            cursorX += (mouseX - cursorX) * 0.5;
+            cursorY += (mouseY - cursorY) * 0.5;
+            cursor.style.transform = `translate(${cursorX}px,${cursorY}px)`;
+        }, { passive: true });
+
+        function setupHoverEffects(){
+            const els = [
+                ...document.querySelectorAll('a, button, .login-card, input')
+            ];
+            els.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.width  = '28px';
+                    cursor.style.height = '28px';
+                    cursor.style.borderColor = 'rgba(96,165,250,0.9)';
+                    cursor.style.background  = 'rgba(59,130,246,0.08)';
+                }, { passive: true });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.width  = '16px';
+                    cursor.style.height = '16px';
+                    cursor.style.borderColor = 'rgba(59,130,246,0.85)';
+                    cursor.style.background  = 'transparent';
+                }, { passive: true });
+            });
         }
-        
-        // Form validation
-        const loginForm = document.getElementById('loginForm');
-        const loginBox = document.querySelector('.login-container');
-        const submitBtn = document.getElementById('submitBtn');
-        const passwordInput = document.getElementById('p');
-        
-        // Only handle validation, don't prevent submission if valid
-        loginForm.addEventListener('submit', function(e) {
-            const passwordValue = passwordInput.value.trim();
-            
-            if (!passwordValue) {
-                e.preventDefault(); // Only prevent if invalid
-                
-                // Remove existing validation errors
-                const existingErrors = document.querySelectorAll('.validation-error');
-                existingErrors.forEach(error => error.remove());
-                
-                // Create validation error
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'validation-error mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg animate-fade-in';
-                errorDiv.innerHTML = `
-                    <div class="flex items-center">
-                        <i class="fas fa-exclamation-circle text-amber-400 mr-2 text-xs"></i>
-                        <p class="text-amber-300 text-xs">Please enter your system password</p>
-                    </div>
-                `;
-                
-                // Insert before the button
-                submitBtn.parentNode.insertBefore(errorDiv, submitBtn);
-                
-                // Add shake effect
-                loginBox.classList.add('animate-shake');
-                setTimeout(() => {
-                    loginBox.classList.remove('animate-shake');
-                }, 500);
+        document.addEventListener('mousedown', () => { cursor.style.width='12px'; cursor.style.height='12px'; }, {passive:true});
+        document.addEventListener('mouseup',   () => { cursor.style.width='16px'; cursor.style.height='16px'; }, {passive:true});
+
+        window.addEventListener('load', () => {
+            cursorX = innerWidth/2; cursorY = innerHeight/2;
+            mouseX  = cursorX;      mouseY  = cursorY;
+            cursor.style.transform    = `translate(${cursorX}px,${cursorY}px)`;
+            cursorDot.style.transform = `translate(${cursorX}px,${cursorY}px)`;
+            setupHoverEffects();
+            document.getElementById('passwordInput').focus();
+        });
+
+        /* ───── Password toggle ───── */
+        window.togglePassword = function(){
+            const input = document.getElementById('passwordInput');
+            const icon  = document.getElementById('toggleIcon');
+            if(input.type === 'password'){
+                input.type = 'text';
+                icon.classList.replace('fa-eye','fa-eye-slash');
             } else {
-                // Show loading state but don't prevent form submission
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connecting...';
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-75');
-                // Let the form submit naturally
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash','fa-eye');
+            }
+        };
+
+        /* ───── Form logic ───── */
+        const form      = document.getElementById('loginForm');
+        const card      = document.getElementById('loginCard');
+        const submitBtn = document.getElementById('submitBtn');
+        const pwInput   = document.getElementById('passwordInput');
+        const valTarget = document.getElementById('validationTarget');
+
+        function clearValidation(){
+            valTarget.innerHTML = '';
+        }
+
+        function triggerShake(){
+            card.classList.remove('shake');
+            void card.offsetWidth; // reflow
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 500);
+        }
+
+        form.addEventListener('submit', function(e){
+            if(!pwInput.value.trim()){
+                e.preventDefault();
+                clearValidation();
+                valTarget.innerHTML = `
+                    <div class="alert-box alert-validation">
+                        <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                        <span>Please enter your system password to continue.</span>
+                    </div>`;
+                triggerShake();
+            } else {
+                // valid — show spinner, let form submit
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting…';
+                submitBtn.disabled  = true;
             }
         });
-        
-        // Auto-focus password input
-        document.addEventListener('DOMContentLoaded', function() {
-            passwordInput.focus();
-        });
-        
-        // Handle Enter key press - let it trigger the form's natural submit
-        passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                // Trigger the form's submit event
-                loginForm.requestSubmit();
+
+        // clear validation on input
+        pwInput.addEventListener('input', () => {
+            clearValidation();
+            if(submitBtn.disabled){
+                submitBtn.innerHTML = '<i class="fas fa-plug"></i> Connect to Database';
+                submitBtn.disabled  = false;
             }
         });
-        
-        // Reset button state if page reloads (in case of error)
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                submitBtn.innerHTML = '<i class="fas fa-plug mr-2"></i>Connect to Database';
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-75');
+
+        // restore button on bfcache
+        window.addEventListener('pageshow', ev => {
+            if(ev.persisted){
+                submitBtn.innerHTML = '<i class="fas fa-plug"></i> Connect to Database';
+                submitBtn.disabled  = false;
             }
         });
-        
-        // Reset on any input change (user correcting error)
-        passwordInput.addEventListener('input', function() {
-            const existingErrors = document.querySelectorAll('.validation-error');
-            existingErrors.forEach(error => error.remove());
-            
-            // Reset button if it's in loading state but form hasn't submitted
-            if (submitBtn.disabled && !passwordInput.value.trim()) {
-                submitBtn.innerHTML = '<i class="fas fa-plug mr-2"></i>Connect to Database';
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-75');
-            }
-        });
+    })();
     </script>
 </body>
-
 </html>
