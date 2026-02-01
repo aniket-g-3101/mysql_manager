@@ -4,351 +4,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Dynamic Table</title>
+    <title>Create Table | MySQL Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         * {
-            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: none;
         }
 
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #f5f6fa 0%, #e9ecef 100%);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .navbar {
-            background: linear-gradient(135deg, #4cd137 0%, #44bd32 100%);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-logo {
-            font-size: 22px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .container {
-            flex: 1;
-            padding: 30px 20px 50px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            width: 100%;
-        }
-
-        .form-container {
-            background: #fff;
-            margin-top: 20px;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            width: 100%;
-            max-width: 700px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .section-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2f3640;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .section-description {
-            color: #636e72;
-            margin-bottom: 30px;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        .db-highlight {
-            color: #44bd32;
-            font-weight: bold;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        form > label {
-            font-weight: 600;
-            color: #2f3640;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-
-        form > input[type="text"],
-        form > input[type="number"] {
-            padding: 14px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-        form > input[type="text"]:focus,
-        form > input[type="number"]:focus {
-            outline: none;
-            border-color: #44bd32;
-            box-shadow: 0 0 0 3px rgba(68, 189, 50, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .field-group {
-            margin-bottom: 25px;
-            background: linear-gradient(135deg, #f8f9ff 0%, #f1f3f4 100%);
-            padding: 25px;
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .field-group::before {
-            content: "";
-            position: absolute;
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(59, 130, 246, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
             top: 0;
             left: 0;
-            width: 4px;
+            will-change: transform;
+            mix-blend-mode: screen;
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            will-change: transform;
+            mix-blend-mode: screen;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Static grid background */
+        .database-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%);
+            background-image: linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Static data nodes */
+        .data-node {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .nav-glass {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            z-index: 50;
+            position: relative;
+        }
+
+        .card-hover {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .card-hover:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glow-border {
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1),
+                        inset 0 0 20px rgba(59, 130, 246, 0.05);
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .terminal-cursor::after {
+            content: "|";
+            animation: cursorBlink 1s step-end infinite;
+            color: #3b82f6;
+            margin-left: 2px;
+        }
+
+        .status-pulse {
+            position: relative;
+        }
+
+        .status-pulse::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            background: currentColor;
+            animation: pulseSoft 2s ease-in-out infinite;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        a, button, input, select, .card-hover {
+            cursor: none !important;
+        }
+
+        /* Form Input Styles */
+        .input-glow {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.2s ease;
+            color: #ffffff;
+        }
+
+        .input-glow:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .input-glow::placeholder {
+            color: rgba(156, 163, 175, 0.6);
+        }
+
+        /* Field Group Styles */
+        .field-group {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-left: 3px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease-out;
         }
 
         .field-group:hover {
-            border-color: #44bd32;
+            border-color: rgba(59, 130, 246, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(68, 189, 50, 0.15);
-        }
-
-        .field-group-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2f3640;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .field-number {
-            background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 50%;
-            font-size: 14px;
-            font-weight: bold;
-            min-width: 35px;
-            height: 35px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(68, 189, 50, 0.3);
-        }
-
-        .field-row {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .field-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .field-row label {
-            flex: 1;
-            margin: 0;
-            font-weight: 600;
-            color: #2f3640;
-            font-size: 14px;
-        }
-
-        .field-row input,
-        .field-row select {
-            flex: 2;
-            padding: 12px 14px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-        .field-row input:focus,
-        .field-row select:focus {
-            outline: none;
-            border-color: #44bd32;
-            box-shadow: 0 0 0 3px rgba(68, 189, 50, 0.1);
-        }
-
-        .field-row input:hover,
-        .field-row select:hover {
-            border-color: #bdc3c7;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #44bd32 0%, #4cd137 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(68, 189, 50, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, #4cd137 0%, #44bd32 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(68, 189, 50, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(68, 189, 50, 0.3);
-        }
-
-        .btn-blue {
-            background: linear-gradient(135deg, #40739e 0%, #487eb0 100%);
-            box-shadow: 0 4px 15px rgba(64, 115, 158, 0.3);
-        }
-
-        .btn-blue:hover {
-            background: linear-gradient(135deg, #487eb0 0%, #40739e 100%);
-            box-shadow: 0 6px 20px rgba(64, 115, 158, 0.4);
-        }
-
-        .back-button-container {
-            margin-top: 30px;
-            margin-right: 450px;
-            width: 90%;
-            display: inline;
-            padding-right: 30px;
-            max-width: 250px;
-        }
-
-        /* Fixed Footer Styles */
-        footer {
-            background: linear-gradient(135deg, #2f3640 0%, #353b48 100%);
-            color: #dcdde1;
-            text-align: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            border-top: 3px solid #44bd32;
-            margin-top: auto;
-            flex-shrink: 0;
-        }
-
-        footer::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #74ebd5, #ACB6E5, #4cd137);
-            transition: left 0.8s ease;
-        }
-
-        footer:hover::before {
-            left: 0;
-        }
-
-        footer p {
-            margin: 8px 0;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        footer p:first-child {
-            font-weight: 600;
-        }
-
-        footer p:last-child {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        footer a {
-            color: #4cd137;
-            text-decoration: none;
-            font-weight: 600;
-            position: relative;
-            transition: all 0.3s ease;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-
-        footer a:hover {
-            color: #fff;
-            background: rgba(76, 209, 55, 0.2);
-            transform: scale(1.05);
-        }
-
-        footer a::after {
-            content: "";
-            position: absolute;
-            width: 0;
-            height: 1px;
-            bottom: 0;
-            left: 50%;
-            background: #4cd137;
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        footer a:hover::after {
-            width: 100%;
-        }
-
-        /* Loading Animation for Dynamic Content */
-        #fieldsContainer {
-            transition: all 0.3s ease;
-        }
-
-        .field-group {
-            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
 
         @keyframes slideIn {
@@ -362,77 +225,265 @@
             }
         }
 
-        /* Enhanced Focus Styles */
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #44bd32 !important;
-            box-shadow: 0 0 0 3px rgba(68, 189, 50, 0.1) !important;
+        .field-number {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
 
-        /* Improved Placeholder Styles */
-        input::placeholder {
-            color: #95a5a6;
-            opacity: 1;
-        }
-
-        /* Better Select Arrow */
-        select {
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        /* Select Dropdown Styling */
+        select.input-glow {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 16px;
             padding-right: 40px;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
         }
 
-    
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
     </style>
 </head>
 
-<body>
-    <div class="main-wrapper">
-        <nav class="navbar">
-            <div class="nav-logo">MySQL Manager</div>
-        </nav>
+<body class="font-inter text-gray-200">
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
 
-        <div class="container">
-            <div class="form-container">
-                <div class="section-title">Create New Table</div>
-                <p class="section-description">Design and create a new table structure for your <span
-                        class="db-highlight">database</span>.</p>
+    <!-- Static Database Grid -->
+    <div class="database-grid"></div>
 
-                <form action="/create_table/" method="post">
-                    <!-- Django CSRF token placeholder -->
-                    {% csrf_token %}
+    <!-- Static Data Nodes -->
+    <div class="data-node" style="top: 15%; left: 10%;"></div>
+    <div class="data-node" style="top: 70%; right: 15%;"></div>
+    <div class="data-node" style="bottom: 40%; left: 20%;"></div>
+    <div class="data-node" style="top: 50%; right: 25%;"></div>
 
-                    <label>Table Name</label>
-                    <input type="text" name="tableName" placeholder="Enter Table Name .." required>
+    <!-- Navigation -->
+    <nav class="nav-glass sticky top-0">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500/30 to-blue-600/10 rounded-lg flex items-center justify-center glow-border">
+                            <i class="fas fa-database text-blue-400 text-xs"></i>
+                        </div>
+                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full status-pulse"></div>
+                    </div>
+                    <span class="text-base font-semibold text-white tracking-tight">MySQL Manager</span>
+                    <span class="text-xs px-2 py-0.5 bg-green-500/20 text-green-300 rounded-full">Create Table</span>
+                </div>
 
-                    <label>How many Fields You Want?</label>
-                    <input type="number" id="fieldCount" name="fieldCount" min="1"
-                        placeholder="Enter number of fields" required>
-
-                    <div id="fieldsContainer"></div>
-
-                    <input type="submit" value="Create Table" class="btn">
-                </form>
-            </div>
-            
-            <div class="back-button-container">
-                <a href="http://127.0.0.1:8000/show_tables/" class="btn btn-blue">Back to Work Area</a>
+                <div class="flex items-center space-x-6">
+                    <a href="http://127.0.0.1:8000/home/" class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200">
+                        <i class="fas fa-home mr-1.5"></i>Home
+                    </a>
+                    <a href="http://127.0.0.1:8000/explore/" class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200">
+                        <i class="fas fa-search mr-1.5"></i>Explore
+                    </a>
+                    <a href="http://127.0.0.1:8000/work/" class="text-sm text-gray-300 hover:text-green-400 transition-all duration-200">
+                        <i class="fas fa-edit mr-1.5"></i>Workshop
+                    </a>
+                    <div class="relative inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-400/30">
+                        <span class="relative flex h-2 w-2 mr-1.5">
+                            <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                        </span>
+                        Connected
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <footer>
-        <p>&copy; 2025 MySQL Manager | <a href="https://www.linkedin.com/in/aniketgavali">Aniket Gavali</a></p>
-        <p>Made with ❤️ for database enthusiasts</p>
-    </footer>
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-6 relative z-10">
+        <!-- Hero Section -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-xl border border-green-500/25 glow-border mr-4">
+                    <i class="fas fa-plus-circle text-lg text-green-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold hero-gradient terminal-cursor">
+                        Create New Table
+                    </h1>
+                    <p class="text-gray-400 text-xs mt-1">
+                        Design and create a new table structure for your database
+                    </p>
+                </div>
+            </div>
 
+            <!-- Back Button -->
+            <div class="flex items-center gap-3">
+                <a href="http://127.0.0.1:8000/show_tables/" class="btn-primary text-white px-4 py-2 rounded-lg text-xs font-medium inline-flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Work Area
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="max-w-2xl mx-auto">
+            <div class="card-hover rounded-2xl p-8">
+                <form action="/create_table/" method="post">
+                    {% csrf_token %}
+
+                    <!-- Table Name -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-white mb-2">
+                            <i class="fas fa-table text-blue-400 mr-2"></i>Table Name
+                        </label>
+                        <input type="text" 
+                               name="tableName" 
+                               placeholder="Enter table name (e.g., users, products)"
+                               class="input-glow w-full px-4 py-3 text-sm rounded-lg"
+                               required>
+                    </div>
+
+                    <!-- Field Count -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-white mb-2">
+                            <i class="fas fa-hashtag text-purple-400 mr-2"></i>Number of Fields
+                        </label>
+                        <input type="number" 
+                               id="fieldCount" 
+                               name="fieldCount" 
+                               min="1" 
+                               max="50"
+                               placeholder="How many fields do you need?"
+                               class="input-glow w-full px-4 py-3 text-sm rounded-lg"
+                               required>
+                        <p class="text-xs text-gray-400 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Define the columns for your table (minimum 1 field)
+                        </p>
+                    </div>
+
+                    <!-- Dynamic Fields Container -->
+                    <div id="fieldsContainer" class="mb-6"></div>
+
+                    <!-- Submit Button -->
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn-success text-white px-6 py-3 rounded-lg text-sm font-medium inline-flex items-center flex-1">
+                            <i class="fas fa-check-circle mr-2"></i>Create Table
+                        </button>
+                        <a href="http://127.0.0.1:8000/show_tables/" class="btn-primary text-white px-6 py-3 rounded-lg text-sm font-medium inline-flex items-center justify-center">
+                            <i class="fas fa-times mr-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Info Card -->
+            <div class="card-hover rounded-xl p-5 mt-6">
+                <h3 class="text-xs font-semibold text-white mb-3 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                    Quick Tips
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="flex items-start space-x-2">
+                        <div class="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1.5 animate-pulse"></div>
+                        <div>
+                            <p class="text-xs font-medium text-white mb-0.5">Table Names</p>
+                            <p class="text-gray-400 text-xs">Use lowercase with underscores (e.g., user_data)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mt-1.5 animate-pulse" style="animation-delay: 0.2s"></div>
+                        <div>
+                            <p class="text-xs font-medium text-white mb-0.5">Field Types</p>
+                            <p class="text-gray-400 text-xs">Choose appropriate data types for efficiency</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-1.5 h-1.5 bg-purple-400 rounded-full mt-1.5 animate-pulse" style="animation-delay: 0.4s"></div>
+                        <div>
+                            <p class="text-xs font-medium text-white mb-0.5">Primary Keys</p>
+                            <p class="text-gray-400 text-xs">Always include an ID field as primary key</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
     <script>
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+
+        let rafId = null;
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            if (!rafId) {
+                rafId = requestAnimationFrame(updateCursor);
+            }
+        }, { passive: true });
+
+        function updateCursor() {
+            cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+            rafId = null;
+        }
+
+        // Hover effects
+        const hoverElements = document.querySelectorAll('a, button, input, select, .card-hover');
+        hoverElements.forEach((el) => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.width = '30px';
+                cursor.style.height = '30px';
+                cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
+                cursor.style.background = 'rgba(59, 130, 246, 0.1)';
+            }, { passive: true });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.borderColor = 'rgba(59, 130, 246, 0.8)';
+                cursor.style.background = 'transparent';
+            }, { passive: true });
+        });
+
+        // Click effect
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '16px';
+            cursor.style.height = '16px';
+        }, { passive: true });
+
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+        }, { passive: true });
+
+        // Dynamic field generation
         const fieldCountInput = document.getElementById("fieldCount");
         const fieldsContainer = document.getElementById("fieldsContainer");
 
@@ -440,31 +491,80 @@
             const count = parseInt(fieldCountInput.value) || 0;
             fieldsContainer.innerHTML = "";
 
+            if (count > 0) {
+                const header = document.createElement("div");
+                header.className = "mb-4";
+                header.innerHTML = `
+                    <h3 class="text-sm font-semibold text-white flex items-center">
+                        <i class="fas fa-columns text-green-400 mr-2"></i>
+                        Field Configuration <span class="ml-2 text-xs text-gray-400">(${count} field${count > 1 ? 's' : ''})</span>
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">Define the name and data type for each field</p>
+                `;
+                fieldsContainer.appendChild(header);
+            }
+
             for (let i = 1; i <= count; i++) {
                 const group = document.createElement("div");
                 group.className = "field-group";
 
                 group.innerHTML = `
-          <div class="field-group-title">
-            <span class="field-number">${i}</span>
-            Field ${i} Configuration
-          </div>
-          <div class="field-row">
-            <label>Field ${i} Name</label>
-            <input type="text" name="fieldName${i}" placeholder="Enter field name" required>
-          </div>
-          <div class="field-row">
-            <label>Data Type</label>
-            <select name="fieldType${i}">
-              <option value="CHAR(100)">Text (CHAR)</option>
-              <option value="INT">Integer (INT)</option>
-              <option value="FLOAT">Float (DECIMAL)</option>
-              <option value="DATE">Date (DATE)</option>
-            </select>
-          </div>
-        `;
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="field-number">${i}</span>
+                        <h4 class="text-sm font-semibold text-white">Field ${i}</h4>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-2">
+                                <i class="fas fa-tag text-blue-400 mr-1"></i>Field Name
+                            </label>
+                            <input type="text" 
+                                   name="fieldName${i}" 
+                                   placeholder="e.g., username, email, created_at"
+                                   class="input-glow w-full px-3 py-2.5 text-sm rounded-lg" 
+                                   required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-300 mb-2">
+                                <i class="fas fa-code text-purple-400 mr-1"></i>Data Type
+                            </label>
+                            <select name="fieldType${i}" class="input-glow w-full px-3 py-2.5 text-sm rounded-lg">
+                                <option value="CHAR(100)">Text - CHAR(100)</option>
+                                <option value="VARCHAR(255)">Text - VARCHAR(255)</option>
+                                <option value="TEXT">Text - TEXT</option>
+                                <option value="INT">Integer - INT</option>
+                                <option value="BIGINT">Integer - BIGINT</option>
+                                <option value="FLOAT">Float - FLOAT</option>
+                                <option value="DOUBLE">Float - DOUBLE</option>
+                                <option value="DECIMAL(10,2)">Decimal - DECIMAL(10,2)</option>
+                                <option value="DATE">Date - DATE</option>
+                                <option value="DATETIME">DateTime - DATETIME</option>
+                                <option value="TIMESTAMP">Timestamp - TIMESTAMP</option>
+                                <option value="BOOLEAN">Boolean - BOOLEAN</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
                 fieldsContainer.appendChild(group);
             }
+
+            // Update hover listeners for newly created elements
+            const newElements = fieldsContainer.querySelectorAll('input, select');
+            newElements.forEach((el) => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.width = '30px';
+                    cursor.style.height = '30px';
+                    cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
+                    cursor.style.background = 'rgba(59, 130, 246, 0.1)';
+                }, { passive: true });
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.width = '20px';
+                    cursor.style.height = '20px';
+                    cursor.style.borderColor = 'rgba(59, 130, 246, 0.8)';
+                    cursor.style.background = 'transparent';
+                }, { passive: true });
+            });
         });
     </script>
 </body>

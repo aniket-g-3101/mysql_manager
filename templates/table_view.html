@@ -1,265 +1,511 @@
 {% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Table View - {{ table_name }}</title>
+    <title>Table View - {{ table_name }} | MySQL Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        html,
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: none;
+        }
+
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(59, 130, 246, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            will-change: transform;
+            mix-blend-mode: screen;
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            will-change: transform;
+            mix-blend-mode: screen;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f6fa;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background: #273c75;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .container {
-            flex: 1;
-            padding: 30px;
-            max-width: 1200px;
-            margin: auto;
-            width: 100%;
-        }
-
-        .section {
-            background: #fff;
-            padding: 25px;
-            margin-bottom: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2f3640;
-            margin-bottom: 10px;
-        }
-
-        .section-description {
-            color: #636e72;
-            margin-bottom: 18px;
-            font-size: 14px;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            background: #44bd32;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background: #4cd137;
-        }
-
-        .btn-blue {
-            background: #40739e;
-        }
-
-        .btn-blue:hover {
-            background: #273c75;
-        }
-
-        .db-highlight {
-            color: #44bd32;
-            font-weight: bold;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        table th,
-        table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            word-wrap: break-word;
-            max-width: 200px;
-        }
-
-        table thead {
-            background: #44bd32;
-            color: white;
-        }
-
-        table tbody tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border-left: 4px solid #44bd32;
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .alert.error {
-            border-left-color: #dc3545;
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .breadcrumb {
-            background: #e9ecef;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .breadcrumb a {
-            color: #44bd32;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .tab-container {
-            margin-bottom: 20px;
-        }
-
-        .tab-buttons {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 0;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            background: #f8f9fa;
-            border: 1px solid #dcdde1;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
-            font-size: 14px;
-            color: #636e72;
-        }
-
-        .tab-btn.active {
-            background: #fff;
-            color: #2f3640;
-            font-weight: bold;
-        }
-
-        .tab-content {
-            background: #fff;
-            border: 1px solid #dcdde1;
-            border-radius: 0 8px 8px 8px;
-            padding: 0;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #2f3640;
-            color: #dcdde1;
-            font-size: 14px;
-            margin-top: auto;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
         }
 
-        footer p {
-            margin: 5px 0;
+        /* Static grid background */
+        .database-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        footer a {
-            color: #4cd137;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease, transform 0.3s ease;
+        /* Static data nodes */
+        .data-node {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
         }
 
-        footer a:hover {
-            color: #44bd32;
-            transform: scale(1.05);
+        .nav-glass {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            z-index: 50;
+            position: relative;
         }
 
-        footer::before {
+        .card-hover {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .card-hover:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glow-border {
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1),
+                        inset 0 0 20px rgba(59, 130, 246, 0.05);
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .terminal-cursor::after {
+            content: "|";
+            animation: cursorBlink 1s step-end infinite;
+            color: #3b82f6;
+            margin-left: 2px;
+        }
+
+        .status-pulse {
+            position: relative;
+        }
+
+        .status-pulse::after {
             content: "";
             position: absolute;
             width: 100%;
-            height: 3px;
-            top: 0;
-            left: -100%;
-            background: linear-gradient(90deg, #74ebd5, #ACB6E5);
-            transition: left 0.6s ease;
+            height: 100%;
+            border-radius: inherit;
+            background: currentColor;
+            animation: pulseSoft 2s ease-in-out infinite;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        a, button, table, .card-hover {
+            cursor: none !important;
+        }
+
+        /* MODERN COMPACT TABLE */
+        .table-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .modern-table-wrapper {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .modern-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .modern-table thead {
+            background: linear-gradient(180deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.08) 100%);
+        }
+
+        .modern-table thead th {
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9ca3af;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+            white-space: nowrap;
+        }
+
+        /* Center specific columns */
+        .modern-table thead th:nth-child(3),
+        .modern-table thead th:nth-child(4) {
+            text-align: center;
+        }
+
+        .modern-table tbody tr {
+            transition: all 0.15s ease;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.08);
+        }
+
+        .modern-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .modern-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .modern-table tbody td {
+            padding: 16px 18px;
+            font-size: 14px;
+            color: #e5e7eb;
+            vertical-align: middle;
+        }
+
+        /* Field column styling */
+        .modern-table tbody td:first-child {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .modern-table tbody td:first-child i {
+            color: #fbbf24;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+
+        /* Type column - monospace */
+        .modern-table tbody td:nth-child(2) {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #c4b5fd;
+            font-weight: 500;
+        }
+
+        /* Null and Key columns - centered */
+        .modern-table tbody td:nth-child(3),
+        .modern-table tbody td:nth-child(4) {
+            text-align: center;
+        }
+
+        /* Compact badge for keys */
+        .key-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Tab styling */
+        .tab-container {
+            background: rgba(17, 24, 39, 0.5);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+            display: flex;
+            gap: 2px;
+            padding: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #9ca3af;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .tab-btn i {
+            margin-right: 8px;
+            font-size: 13px;
+        }
+
+        .tab-btn:hover {
+            color: #e5e7eb;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            background: rgba(59, 130, 246, 0.12);
+            border-bottom-color: #3b82f6;
+        }
+
+        /* Content padding */
+        .tab-content {
+            padding: 28px;
+        }
+
+        .tab-header {
+            margin-bottom: 20px;
+        }
+
+        .tab-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .tab-header h2 span {
+            color: #a78bfa;
+        }
+
+        .tab-header p {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .empty-state-icon i {
+            font-size: 24px;
+            color: #6b7280;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* Scrollbar */
+        .modern-table-wrapper::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .modern-table-wrapper::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .modern-table-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 5px;
+        }
+
+        .modern-table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
+<body class="font-inter text-gray-200">
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
 
-<body>
-    <div class="header">Table View - {{ table_name }}</div>
-    
-    <div class="container">
-        <!-- Breadcrumb Navigation -->
-        <div class="breadcrumb">
-            <a href="/show_tables/">Work Area</a> > <span class="db-highlight">{{ selected_db }}</span> > <strong>{{ table_name }}</strong>
+    <!-- Static Database Grid -->
+    <div class="database-grid"></div>
+
+    <!-- Static Data Nodes -->
+    <div class="data-node" style="top: 15%; left: 10%;"></div>
+    <div class="data-node" style="top: 70%; right: 15%;"></div>
+    <div class="data-node" style="bottom: 40%; left: 20%;"></div>
+    <div class="data-node" style="top: 50%; right: 25%;"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-glass sticky top-0">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500/30 to-blue-600/10 rounded-lg flex items-center justify-center glow-border">
+                            <i class="fas fa-database text-blue-400 text-xs"></i>
+                        </div>
+                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full status-pulse"></div>
+                    </div>
+                    <span class="text-base font-semibold text-white tracking-tight">MySQL Manager</span>
+                    <span class="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full">Table View</span>
+                </div>
+
+                <div class="flex items-center space-x-6">
+                    <a href="http://127.0.0.1:8000/home/" class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200">
+                        <i class="fas fa-home mr-1.5"></i>Home
+                    </a>
+                    <a href="http://127.0.0.1:8000/explore/" class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200">
+                        <i class="fas fa-search mr-1.5"></i>Explore
+                    </a>
+                    <a href="http://127.0.0.1:8000/work/" class="text-sm text-gray-300 hover:text-green-400 transition-all duration-200">
+                        <i class="fas fa-edit mr-1.5"></i>Workshop
+                    </a>
+                    <div class="relative inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-400/30">
+                        <span class="relative flex h-2 w-2 mr-1.5">
+                            <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                        </span>
+                        Connected
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <!-- Error Messages -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-6 relative z-10">
+        <!-- Hero Section -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl border border-purple-500/25 glow-border mr-4">
+                    <i class="fas fa-table text-lg text-purple-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold hero-gradient terminal-cursor">
+                        Table View
+                    </h1>
+                    <p class="text-gray-400 text-xs mt-1">
+                        <a href="/show_tables/" class="text-blue-400 hover:text-blue-300">Work Area</a>
+                        <span class="text-gray-600 mx-1.5">›</span>
+                        <span class="text-green-400 font-medium">{{ selected_db }}</span>
+                        <span class="text-gray-600 mx-1.5">›</span>
+                        <span class="text-white font-semibold">{{ table_name }}</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-3">
+                <a href="http://127.0.0.1:8000/show_tables/" class="btn-primary text-white px-4 py-2 rounded-lg text-xs font-medium inline-flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>Back
+                </a>
+                <a href="http://127.0.0.1:8000/edit_table/" class="btn-success text-white px-4 py-2 rounded-lg text-xs font-medium inline-flex items-center">
+                    <i class="fas fa-edit mr-2"></i>Edit Table
+                </a>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
         {% if error %}
-        <div class="alert error">
-            <strong>Error:</strong> {{ error }}
+        <div class="mb-6">
+            <div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 rounded-full">
+                <div class="w-2 h-2 bg-red-400 rounded-full mr-2.5 animate-pulse"></div>
+                <span class="text-red-300 text-xs font-medium">{{ error }}</span>
+            </div>
         </div>
         {% endif %}
-        
+
         {% if table_name %}
-        <!-- Tab Container -->
-        <div class="tab-container">
-            <div class="tab-buttons">
-                <button class="tab-btn active" onclick="showTab('structure')">Table Structure</button>
-                <button class="tab-btn" onclick="showTab('data')">Table Data</button>
-            </div>
-            <div class="tab-content">
-                <!-- Table Structure Tab -->
-                <div id="structure-tab" class="section" style="margin: 0; border-radius: 0;">
-                    <div class="section-title">Structure of <span class="db-highlight">{{ table_name }}</span></div>
+        <!-- Table Container with Max Width -->
+        <div class="table-container">
+            <div class="card-hover rounded-2xl overflow-hidden">
+                <!-- Modern Tabs -->
+                <div class="tab-container">
+                    <button class="tab-btn active" onclick="showTab('structure')">
+                        <i class="fas fa-sitemap"></i>Table Structure
+                    </button>
+                    <button class="tab-btn" onclick="showTab('data')">
+                        <i class="fas fa-database"></i>Table Data
+                    </button>
+                </div>
+
+                <!-- Structure Tab -->
+                <div id="structure-tab" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Structure of <span>{{ table_name }}</span></h2>
+                        <p>Column definitions and properties</p>
+                    </div>
+
                     {% if table_structure %}
-                    <div class="table-container">
-                        <table>
+                    <div class="modern-table-wrapper">
+                        <table class="modern-table">
                             <thead>
                                 <tr>
                                     <th>Field</th>
@@ -273,30 +519,46 @@
                             <tbody>
                                 {% for field in table_structure %}
                                 <tr>
-                                    <td><strong>{{ field.field }}</strong></td>
+                                    <td>
+                                        <i class="fas fa-key"></i>{{ field.field }}
+                                    </td>
                                     <td>{{ field.type }}</td>
                                     <td>{{ field.null }}</td>
-                                    <td>{{ field.key }}</td>
-                                    <td>{{ field.default }}</td>
-                                    <td>{{ field.extra }}</td>
+                                    <td>
+                                        {% if field.key %}
+                                        <span class="key-badge">{{ field.key }}</span>
+                                        {% else %}
+                                        <span style="color: #6b7280;">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ field.default|default:"—" }}</td>
+                                    <td>{{ field.extra|default:"—" }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     {% else %}
-                    <p style="text-align: center; color: #636e72; font-style: italic;">No structure information available</p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <p>No structure information available</p>
+                    </div>
                     {% endif %}
                 </div>
-                
-                <!-- Table Data Tab -->
-                <div id="data-tab" class="section" style="margin: 0; border-radius: 0; display: none;">
-                    <div class="section-title">Data in <span class="db-highlight">{{ table_name }}</span></div>
-                    <p class="section-description">Showing first 100 rows</p>
+
+                <!-- Data Tab -->
+                <div id="data-tab" class="tab-content" style="display: none;">
+                    <div class="tab-header">
+                        <h2>Data in <span>{{ table_name }}</span></h2>
+                        <p>Showing first 100 rows</p>
+                    </div>
+
                     {% if table_data %}
-                    <div class="table-container">
-                        <table>
-                            <thead>
+                    <div class="modern-table-wrapper" style="max-height: 600px; overflow-y: auto;">
+                        <table class="modern-table">
+                            <thead style="position: sticky; top: 0; z-index: 10;">
                                 <tr>
                                     {% for column in table_columns %}
                                     <th>{{ column }}</th>
@@ -315,42 +577,88 @@
                         </table>
                     </div>
                     {% else %}
-                    <p style="text-align: center; color: #636e72; font-style: italic;">No data found in this table</p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <p>No data found in this table</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>
         </div>
-        
-        <!-- Button Container with Left and Right Alignment -->
-        <div class="button-container">
-            <a href="http://127.0.0.1:8000/show_tables/" class="btn btn-blue">← Back to Work Area</a>
-            <a href="http://127.0.0.1:8000/edit_table/" class="btn">Edit Table</a>
-        </div>
         {% endif %}
-    </div>
-    
-    <footer>
-        <p>&copy; 2025 MySQL Manager | <a href="https://www.linkedin.com/in/aniketgavali">Aniket Gavali</a></p>
-        <p>Made with ❤️ for database enthusiasts</p>
-    </footer>
-    
+    </main>
+
+    <!-- JavaScript -->
     <script>
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+
+        let rafId = null;
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            if (!rafId) {
+                rafId = requestAnimationFrame(updateCursor);
+            }
+        }, { passive: true });
+
+        function updateCursor() {
+            cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+            rafId = null;
+        }
+
+        // Hover effects
+        const hoverElements = document.querySelectorAll('a, button, table, .card-hover, .tab-btn');
+        hoverElements.forEach((el) => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.width = '30px';
+                cursor.style.height = '30px';
+                cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
+                cursor.style.background = 'rgba(59, 130, 246, 0.1)';
+            }, { passive: true });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.borderColor = 'rgba(59, 130, 246, 0.8)';
+                cursor.style.background = 'transparent';
+            }, { passive: true });
+        });
+
+        // Click effect
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '16px';
+            cursor.style.height = '16px';
+        }, { passive: true });
+
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+        }, { passive: true });
+
+        // Tab switching
         function showTab(tabName) {
             // Hide all tabs
             document.getElementById('structure-tab').style.display = 'none';
             document.getElementById('data-tab').style.display = 'none';
             
-            // Remove active class from all buttons
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
+            // Remove active class
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
             
             // Show selected tab
             document.getElementById(tabName + '-tab').style.display = 'block';
             
-            // Add active class to clicked button
+            // Add active class
             event.target.classList.add('active');
         }
     </script>
 </body>
-
 </html>
