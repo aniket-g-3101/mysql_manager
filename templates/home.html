@@ -19,7 +19,7 @@
       * {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        cursor: none;
+        cursor: none !important;
       }
 
       html {
@@ -34,38 +34,37 @@
         font-family: "Inter", sans-serif;
       }
 
-      /* Custom cursor */
+      /* Optimized Custom Cursor */
       .custom-cursor {
         position: fixed;
-        width: 20px;
-        height: 20px;
-        border: 2px solid rgba(59, 130, 246, 0.8);
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(59, 130, 246, 0.85);
         border-radius: 50%;
         pointer-events: none;
         z-index: 9999;
-        transition: transform 0.1s ease;
         mix-blend-mode: screen;
+        transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+        will-change: transform;
+        backface-visibility: hidden;
+        transform: translateZ(0);
       }
 
       .cursor-dot {
         position: fixed;
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         background: #3b82f6;
         border-radius: 50%;
         pointer-events: none;
         z-index: 9999;
-        transition: transform 0.05s ease;
         mix-blend-mode: screen;
+        will-change: transform;
+        backface-visibility: hidden;
+        transform: translateZ(0);
       }
 
-      .cursor-hover {
-        transform: scale(1.5);
-        border-color: rgba(96, 165, 250, 0.9);
-        background: rgba(59, 130, 246, 0.1);
-      }
-
-      /* Static grid background */
+      /* Database Grid - Optimized */
       .database-grid {
         position: fixed;
         top: 0;
@@ -73,11 +72,11 @@
         width: 100%;
         height: 100%;
         background-image: linear-gradient(
-            rgba(59, 130, 246, 0.05) 1px,
+            rgba(59, 130, 246, 0.03) 1px,
             transparent 1px
           ),
-          linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-        background-size: 40px 40px;
+          linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+        background-size: 35px 35px;
         background-position: center center;
         z-index: 0;
         pointer-events: none;
@@ -86,33 +85,32 @@
       /* Static data nodes */
       .data-node {
         position: fixed;
-        width: 8px;
-        height: 8px;
-        background: rgba(59, 130, 246, 0.6);
+        width: 6px;
+        height: 6px;
+        background: rgba(59, 130, 246, 0.5);
         border-radius: 50%;
         z-index: 2;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
       }
 
       .nav-glass {
-        background: rgba(15, 23, 42, 0.85);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        background: rgba(15, 23, 42, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(59, 130, 246, 0.08);
         z-index: 50;
-        position: relative;
       }
 
       .card-hover {
-        background: rgba(30, 41, 59, 0.85);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(59, 130, 246, 0.15);
-        transition: all 0.2s ease;
+        background: rgba(30, 41, 59, 0.9);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(59, 130, 246, 0.12);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .card-hover:hover {
-        border-color: rgba(59, 130, 246, 0.3);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        border-color: rgba(59, 130, 246, 0.25);
+        transform: translateY(-1px);
+        box-shadow: 0 12px 25px rgba(59, 130, 246, 0.15);
       }
 
       .hero-gradient {
@@ -140,49 +138,13 @@
         transition: all 0.2s ease;
       }
 
-      .glow-border {
-        border: 1px solid rgba(59, 130, 246, 0.2);
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.1),
-          inset 0 0 20px rgba(59, 130, 246, 0.05);
+      /* Text sizes */
+      .text-xs-sm {
+        font-size: 0.75rem;
       }
 
-      .terminal-cursor::after {
-        content: "|";
-        animation: cursorBlink 1s step-end infinite;
-        color: #3b82f6;
-        margin-left: 2px;
-      }
-
-      @keyframes cursorBlink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0; }
-      }
-
-      .status-pulse {
-        position: relative;
-      }
-
-      .status-pulse::after {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: inherit;
-        background: currentColor;
-        animation: pulseSoft 2s ease-in-out infinite;
-        opacity: 0.3;
-        z-index: -1;
-      }
-
-      @keyframes pulseSoft {
-        0%, 100% { opacity: 0.6; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.05); }
-      }
-
-      a,
-      button,
-      .clickable {
-        cursor: none;
+      .text-sm-sm {
+        font-size: 0.8125rem;
       }
     </style>
   </head>
@@ -207,44 +169,35 @@
 
     <!-- Navigation -->
     <nav class="nav-glass sticky top-0">
-      <div class="container mx-auto px-6 py-3">
+      <div class="container mx-auto px-5 py-2.5">
         <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-3">
-            <div class="relative">
-              <div
-                class="w-8 h-8 bg-gradient-to-br from-blue-500/30 to-blue-600/10 rounded-lg flex items-center justify-center glow-border"
-              >
-                <i class="fas fa-database text-blue-400 text-xs"></i>
-              </div>
-              <div
-                class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full status-pulse"
-              ></div>
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 bg-gradient-to-br from-blue-500/25 to-blue-600/10 rounded-lg flex items-center justify-center border border-blue-500/20">
+              <i class="fas fa-database text-blue-400 text-xs"></i>
             </div>
-            <span class="text-base font-semibold text-white tracking-tight"
-              >MySQL Manager</span
-            >
+            <span class="text-base font-semibold text-white">MySQL Manager</span>
             <span
               class="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full"
               >v2.0</span
             >
           </div>
 
-          <div class="flex items-center space-x-6">
+          <div class="flex items-center space-x-4">
             <a
               href="#features"
-              class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200 clickable"
+              class="text-xs-sm text-gray-300 hover:text-blue-400 transition-colors duration-150"
             >
               Features
             </a>
             <div
-              class="relative inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-400/30"
+              class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs-sm font-medium border border-emerald-400/25"
             >
-              <span class="relative flex h-2 w-2 mr-1.5">
+              <span class="relative flex h-1.5 w-1.5 mr-1">
                 <span
                   class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"
                 ></span>
                 <span
-                  class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"
                 ></span>
               </span>
               Connected
@@ -255,22 +208,22 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-6 py-8 relative z-10">
+    <main class="container mx-auto px-5 py-8 relative z-10">
       <!-- Hero Section -->
       <div class="text-center max-w-3xl mx-auto">
         <div
-          class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-2xl mb-4 border border-blue-500/25 glow-border"
+          class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-2xl mb-4 border border-blue-500/20"
         >
           <i class="fas fa-server text-2xl text-blue-400"></i>
         </div>
 
         <h1
-          class="text-3xl font-bold mb-3 hero-gradient terminal-cursor"
+          class="text-3xl font-bold mb-3 hero-gradient"
         >
           Modern MySQL Management
         </h1>
 
-        <p class="text-gray-300 mb-6 text-sm leading-relaxed max-w-2xl mx-auto">
+        <p class="text-gray-300 mb-6 text-sm-sm leading-relaxed max-w-2xl mx-auto">
           A sleek, intuitive interface for managing MySQL databases. Explore,
           edit, and optimize your databases with powerful visual tools.
         </p>
@@ -283,7 +236,7 @@
         <!-- Card 1 - Database Explorer -->
         <a
           href="http://127.0.0.1:8000/explore/"
-          class="card-hover rounded-xl p-5 hover:bg-blue-900/10 clickable"
+          class="card-hover rounded-xl p-5 hover:bg-blue-900/10"
         >
           <div class="flex items-start space-x-3">
             <div
@@ -300,32 +253,32 @@
                   class="fas fa-arrow-right text-blue-400 text-xs"
                 ></i>
               </div>
-              <p class="text-gray-400 text-xs mb-4 leading-relaxed">
+              <p class="text-gray-400 text-xs-sm mb-4 leading-relaxed">
                 Browse databases, tables, and records with an intuitive visual
                 interface. Real-time preview and schema visualization.
               </p>
               <div class="space-y-2">
                 <div
-                  class="flex items-center text-gray-300 text-xs"
+                  class="flex items-center text-gray-300 text-xs-sm"
                 >
                   <div
-                    class="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 animate-pulse"
+                    class="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"
                   ></div>
                   <span>Visual table explorer</span>
                 </div>
                 <div
-                  class="flex items-center text-gray-300 text-xs"
+                  class="flex items-center text-gray-300 text-xs-sm"
                 >
                   <div
-                    class="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 animate-pulse"
+                    class="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"
                   ></div>
                   <span>Real-time data preview</span>
                 </div>
                 <div
-                  class="flex items-center text-gray-300 text-xs"
+                  class="flex items-center text-gray-300 text-xs-sm"
                 >
                   <div
-                    class="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 animate-pulse"
+                    class="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"
                   ></div>
                   <span>Schema visualization</span>
                 </div>
@@ -337,7 +290,7 @@
         <!-- Card 2 - Query Workshop -->
         <a
           href="http://127.0.0.1:8000/work/"
-          class="card-hover rounded-xl p-5 hover:bg-green-900/10 clickable"
+          class="card-hover rounded-xl p-5 hover:bg-green-900/10"
         >
           <div class="flex items-start space-x-3">
             <div
@@ -352,32 +305,32 @@
                   class="fas fa-arrow-right text-green-400 text-xs"
                 ></i>
               </div>
-              <p class="text-gray-400 text-xs mb-4 leading-relaxed">
+              <p class="text-gray-400 text-xs-sm mb-4 leading-relaxed">
                 Create, edit, and execute SQL queries with syntax highlighting
                 and auto-complete. Save and manage query history.
               </p>
               <div class="space-y-2">
                 <div
-                  class="flex items-center text-gray-300 text-xs"
+                  class="flex items-center text-gray-300 text-xs-sm"
                 >
                   <div
-                    class="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"
+                    class="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"
                   ></div>
                   <span>Visual query builder</span>
                 </div>
                 <div
-                  class="flex items-center text-gray-300 text-xs"
+                  class="flex items-center text-gray-300 text-xs-sm"
                 >
                   <div
-                    class="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"
+                    class="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"
                   ></div>
                   <span>SQL auto-completion</span>
                 </div>
                 <div
-                  class="flex items-center text-gray-300 text-xs"
+                  class="flex items-center text-gray-300 text-xs-sm"
                 >
                   <div
-                    class="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"
+                    class="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"
                   ></div>
                   <span>Query history & favorites</span>
                 </div>
@@ -391,14 +344,14 @@
       <div class="max-w-4xl mx-auto mt-12" id="features">
         <div class="text-center mb-8">
           <h2 class="text-xl font-bold text-white mb-2">Powerful Features</h2>
-          <p class="text-gray-400 text-xs">
+          <p class="text-gray-400 text-xs-sm">
             Everything you need for efficient database management
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div
-            class="card-hover rounded-lg p-5 transition-all duration-200 hover:scale-[1.02] clickable"
+            class="card-hover rounded-lg p-5 transition-all duration-200 hover:scale-[1.02]"
           >
             <div
               class="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl flex items-center justify-center mb-3 border border-blue-500/20"
@@ -408,14 +361,14 @@
             <h4 class="text-sm font-semibold text-white mb-2">
               Performance Analytics
             </h4>
-            <p class="text-gray-400 text-xs leading-relaxed">
+            <p class="text-gray-400 text-xs-sm leading-relaxed">
               Monitor query performance and optimize database operations with
               detailed insights and visual metrics.
             </p>
           </div>
 
           <div
-            class="card-hover rounded-lg p-5 transition-all duration-200 hover:scale-[1.02] clickable"
+            class="card-hover rounded-lg p-5 transition-all duration-200 hover:scale-[1.02]"
           >
             <div
               class="w-10 h-10 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-xl flex items-center justify-center mb-3 border border-green-500/20"
@@ -425,14 +378,14 @@
             <h4 class="text-sm font-semibold text-white mb-2">
               Security Tools
             </h4>
-            <p class="text-gray-400 text-xs leading-relaxed">
+            <p class="text-gray-400 text-xs-sm leading-relaxed">
               Manage user permissions and audit database activities securely
               with role-based access control.
             </p>
           </div>
 
           <div
-            class="card-hover rounded-lg p-5 transition-all duration-200 hover:scale-[1.02] clickable"
+            class="card-hover rounded-lg p-5 transition-all duration-200 hover:scale-[1.02]"
           >
             <div
               class="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl flex items-center justify-center mb-3 border border-purple-500/20"
@@ -440,7 +393,7 @@
               <i class="fas fa-download text-purple-400 text-sm"></i>
             </div>
             <h4 class="text-sm font-semibold text-white mb-2">Import/Export</h4>
-            <p class="text-gray-400 text-xs leading-relaxed">
+            <p class="text-gray-400 text-xs-sm leading-relaxed">
               Easily import and export data in multiple formats (CSV, JSON, SQL)
               with batch processing support.
             </p>
@@ -452,28 +405,28 @@
       <div class="max-w-4xl mx-auto mt-12">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div
-            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 glow-border transition-all duration-200 hover:border-blue-500/30 hover:scale-[1.03] clickable"
+            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 transition-all duration-200 hover:border-blue-500/30 hover:scale-[1.03]"
           >
             <div class="text-blue-400 text-lg font-bold mb-1">MySQL 8.0</div>
-            <div class="text-gray-300 text-xs font-medium">Database Engine</div>
+            <div class="text-gray-300 text-xs-sm font-medium">Database Engine</div>
           </div>
           <div
-            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 glow-border transition-all duration-200 hover:border-green-500/30 hover:scale-[1.03] clickable"
+            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 transition-all duration-200 hover:border-green-500/30 hover:scale-[1.03]"
           >
             <div class="text-green-400 text-lg font-bold mb-1">Real-time</div>
-            <div class="text-gray-300 text-xs font-medium">Live Updates</div>
+            <div class="text-gray-300 text-xs-sm font-medium">Live Updates</div>
           </div>
           <div
-            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 glow-border transition-all duration-200 hover:border-purple-500/30 hover:scale-[1.03] clickable"
+            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 transition-all duration-200 hover:border-purple-500/30 hover:scale-[1.03]"
           >
             <div class="text-purple-400 text-lg font-bold mb-1">Secure</div>
-            <div class="text-gray-300 text-xs font-medium">Encrypted</div>
+            <div class="text-gray-300 text-xs-sm font-medium">Encrypted</div>
           </div>
           <div
-            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 glow-border transition-all duration-200 hover:border-amber-500/30 hover:scale-[1.03] clickable"
+            class="bg-gray-900/40 rounded-lg p-4 text-center border border-gray-800/50 transition-all duration-200 hover:border-amber-500/30 hover:scale-[1.03]"
           >
             <div class="text-amber-400 text-lg font-bold mb-1">Web-based</div>
-            <div class="text-gray-300 text-xs font-medium">Access Anywhere</div>
+            <div class="text-gray-300 text-xs-sm font-medium">Access Anywhere</div>
           </div>
         </div>
       </div>
@@ -481,30 +434,30 @@
 
     <!-- Footer -->
     <footer class="mt-16 border-t border-gray-800/50 py-8 relative z-10">
-      <div class="container mx-auto px-6">
+      <div class="container mx-auto px-5">
         <div class="flex flex-col md:flex-row justify-between items-center">
           <div class="flex items-center space-x-2.5 mb-4 md:mb-0">
             <div
-              class="w-7 h-7 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded flex items-center justify-center glow-border"
+              class="w-7 h-7 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded flex items-center justify-center border border-blue-500/20"
             >
               <i class="fas fa-database text-blue-400 text-xs"></i>
             </div>
             <div>
               <span class="text-sm font-medium text-white">MySQL Manager</span>
-              <p class="text-gray-500 text-xs mt-0.5">
+              <p class="text-gray-500 text-xs-sm mt-0.5">
                 Modern Database Interface
               </p>
             </div>
           </div>
 
-          <div class="flex items-center space-x-2 text-gray-400 text-xs mb-4 md:mb-0">
+          <div class="flex items-center space-x-2 text-gray-400 text-xs-sm mb-4 md:mb-0">
             <i class="fas fa-heart text-red-400 animate-pulse"></i>
             <span>Made for database Management</span>
           </div>
 
           <div>
             <div
-              class="flex items-center text-xs text-gray-400 bg-gray-800/40 px-3 py-1.5 rounded-full"
+              class="flex items-center text-xs-sm text-gray-400 bg-gray-800/40 px-3 py-1.5 rounded-full"
             >
               <div
                 class="w-1.5 h-1.5 bg-green-400 rounded-full mr-2 animate-pulse"
@@ -517,41 +470,146 @@
       </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Working JavaScript -->
     <script>
-      // Custom cursor
+      // Get cursor elements
       const cursor = document.querySelector(".custom-cursor");
       const cursorDot = document.querySelector(".cursor-dot");
-
+      
+      // Mouse position tracking
+      let mouseX = 0;
+      let mouseY = 0;
+      
+      // Cursor position for smooth interpolation
+      let cursorX = 0;
+      let cursorY = 0;
+      let dotX = 0;
+      let dotY = 0;
+      
+      // Animation control
+      let isAnimating = false;
+      let animationId = null;
+      
+      // Update mouse position
       document.addEventListener("mousemove", (e) => {
-        cursor.style.left = e.clientX + "px";
-        cursor.style.top = e.clientY + "px";
-        cursorDot.style.left = e.clientX + "px";
-        cursorDot.style.top = e.clientY + "px";
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // Start animation if not already running
+        if (!isAnimating) {
+          isAnimating = true;
+          animateCursor();
+        }
       });
-
-      // Hover effects for cursor
-      const hoverElements = document.querySelectorAll(
-        "a, button, .clickable, .card-hover, .feature-icon"
-      );
-
-      hoverElements.forEach((el) => {
-        el.addEventListener("mouseenter", () => {
-          cursor.classList.add("cursor-hover");
+      
+      // Smooth cursor animation
+      function animateCursor() {
+        // Smooth interpolation for outer cursor (slower)
+        cursorX += (mouseX - cursorX) * 0.15;
+        cursorY += (mouseY - cursorY) * 0.15;
+        
+        // Faster interpolation for dot (follows more closely)
+        dotX += (mouseX - dotX) * 0.3;
+        dotY += (mouseY - dotY) * 0.3;
+        
+        // Apply transforms
+        cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+        cursorDot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+        
+        // Continue animation if mouse is still moving
+        const distance = Math.sqrt((mouseX - cursorX) ** 2 + (mouseY - cursorY) ** 2);
+        if (distance > 0.5) {
+          animationId = requestAnimationFrame(animateCursor);
+        } else {
+          isAnimating = false;
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+        }
+      }
+      
+      // Hover effects
+      function setupHoverEffects() {
+        // Get all hoverable elements
+        const hoverElements = [
+          ...document.querySelectorAll('a'),
+          ...document.querySelectorAll('.card-hover'),
+          ...document.querySelectorAll('.feature-icon'),
+          ...document.querySelectorAll('.bg-gray-900/40')
+        ];
+        
+        hoverElements.forEach(element => {
+          // Mouse enter
+          element.addEventListener('mouseenter', () => {
+            cursor.style.width = '32px';
+            cursor.style.height = '32px';
+            
+            // Check for different colors based on element content
+            if (element.querySelector('.fa-search') || 
+                element.querySelector('.text-blue-400')) {
+              cursor.style.borderColor = 'rgba(59, 130, 246, 0.9)';
+              cursor.style.background = 'rgba(59, 130, 246, 0.1)';
+            } else if (element.querySelector('.fa-edit') || 
+                      element.querySelector('.text-green-400')) {
+              cursor.style.borderColor = 'rgba(16, 185, 129, 0.9)';
+              cursor.style.background = 'rgba(16, 185, 129, 0.1)';
+            } else if (element.querySelector('.text-purple-400')) {
+              cursor.style.borderColor = 'rgba(139, 92, 246, 0.9)';
+              cursor.style.background = 'rgba(139, 92, 246, 0.1)';
+            } else if (element.querySelector('.text-amber-400')) {
+              cursor.style.borderColor = 'rgba(245, 158, 11, 0.9)';
+              cursor.style.background = 'rgba(245, 158, 11, 0.1)';
+            } else {
+              cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
+              cursor.style.background = 'rgba(59, 130, 246, 0.1)';
+            }
+          });
+          
+          // Mouse leave
+          element.addEventListener('mouseleave', () => {
+            cursor.style.width = '18px';
+            cursor.style.height = '18px';
+            cursor.style.borderColor = 'rgba(59, 130, 246, 0.85)';
+            cursor.style.background = 'transparent';
+          });
         });
-
-        el.addEventListener("mouseleave", () => {
-          cursor.classList.remove("cursor-hover");
-        });
+      }
+      
+      // Click effects
+      document.addEventListener('mousedown', () => {
+        cursor.style.width = '14px';
+        cursor.style.height = '14px';
       });
-
-      // Click effect for cursor
-      document.addEventListener("mousedown", () => {
-        cursor.style.transform = "scale(0.8)";
+      
+      document.addEventListener('mouseup', () => {
+        cursor.style.width = '18px';
+        cursor.style.height = '18px';
       });
-
-      document.addEventListener("mouseup", () => {
-        cursor.style.transform = "scale(1)";
+      
+      // Initialize cursor position
+      window.addEventListener('load', () => {
+        // Set initial position to center
+        cursorX = window.innerWidth / 2;
+        cursorY = window.innerHeight / 2;
+        dotX = cursorX;
+        dotY = cursorY;
+        
+        cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+        cursorDot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+        
+        // Setup hover effects
+        setupHoverEffects();
+      });
+      
+      // Re-setup hover effects when DOM changes
+      const observer = new MutationObserver(() => {
+        setupHoverEffects();
+      });
+      
+      observer.observe(document.body, { 
+        childList: true, 
+        subtree: true 
       });
 
       // Smooth scroll for anchor links

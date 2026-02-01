@@ -1,313 +1,558 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Table Operations - {{ table }}</title>
+    <title>Table Operations - {{ table }} | MySQL Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
-        html,
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: none !important;
+        }
+
+        /* Optimized Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid rgba(59, 130, 246, 0.85);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            transition: width 0.08s ease, height 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #3b82f6;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        /* Base styles */
         body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f6fa;
-            display: flex;
-            flex-direction: column;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
 
-        .header {
-            background: #273c75;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .container {
-            flex: 1;
-            padding: 30px;
-            max-width: 1200px;
-            margin: auto;
+        /* Database Grid */
+        .database-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+            background-position: center center;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .section {
-            background: #fff;
-            padding: 25px;
-            margin-bottom: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        /* Static data nodes */
+        .data-node {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
         }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2f3640;
-            margin-bottom: 10px;
+        /* Compact Navigation */
+        .nav-glass {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.08);
+            z-index: 50;
         }
 
-        .section-description {
-            color: #636e72;
-            margin-bottom: 18px;
-            font-size: 14px;
+        /* Compact Cards */
+        .card-hover {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .breadcrumb {
-            background: #e9ecef;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
+        .card-hover:hover {
+            border-color: rgba(59, 130, 246, 0.25);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
         }
 
-        .breadcrumb a {
-            color: #44bd32;
-            text-decoration: none;
+        .hero-gradient {
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .db-highlight {
-            color: #44bd32;
-            font-weight: bold;
-        }
-
+        /* Compact Buttons */
         .btn {
-            padding: 12px 20px;
-            background: #44bd32;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
         }
 
-        .btn:hover {
-            background: #4cd137;
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        .btn-danger {
-            background: #e74c3c;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .btn-warning {
-            background: #f39c12;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
-        .btn-warning:hover {
-            background: #e67e22;
+        .btn-warning:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
         }
 
-        .btn-blue {
-            background: #40739e;
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        .btn-blue:hover {
-            background: #273c75;
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
+        /* Compact Inputs */
+        .input-premium {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #ffffff;
+        }
+
+        .input-premium:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        /* Compact Tabs */
         .tab-container {
-            margin-bottom: 20px;
-        }
-
-        .tab-buttons {
+            background: rgba(17, 24, 39, 0.5);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
             display: flex;
-            gap: 5px;
-            margin-bottom: 0;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            background: #f8f9fa;
-            border: 1px solid #dcdde1;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
-            font-size: 14px;
-            color: #636e72;
-        }
-
-        .tab-btn.active {
-            background: #fff;
-            color: #2f3640;
-            font-weight: bold;
-        }
-
-        .tab-content {
-            background: #fff;
-            border: 1px solid #dcdde1;
-            border-radius: 0 8px 8px 8px;
+            gap: 1px;
             padding: 0;
         }
 
-        .operation-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #9ca3af;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .tab-btn i {
+            margin-right: 6px;
+            font-size: 12px;
         }
 
-        .form-label {
-            font-weight: bold;
-            color: #2f3640;
-            font-size: 14px;
+        .tab-btn:hover {
+            color: #e5e7eb;
+            background: rgba(59, 130, 246, 0.05);
         }
 
-        .form-input {
-            padding: 12px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
+        .tab-btn.active {
+            color: #ffffff;
+            background: rgba(59, 130, 246, 0.1);
+            border-bottom-color: #3b82f6;
         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: #44bd32;
-            box-shadow: 0 0 0 3px rgba(68, 189, 50, 0.1);
+        .tab-content {
+            padding: 24px;
         }
 
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        footer {
-            text-align: center;
+        /* Compact Operation Card */
+        .operation-card {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 10px;
             padding: 20px;
-            background: #2f3640;
-            color: #dcdde1;
-            font-size: 14px;
-            margin-top: auto;
-            position: relative;
-            overflow: hidden;
+            border-left: 3px solid #3b82f6;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        footer p {
-            margin: 5px 0;
+        .operation-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.15);
         }
 
-        footer a {
-            color: #4cd137;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease, transform 0.3s ease;
+        /* Smaller Text Sizes */
+        .text-xs-sm {
+            font-size: 0.7rem;
         }
 
-        footer a:hover {
-            color: #44bd32;
-            transform: scale(1.05);
+        .text-sm-sm {
+            font-size: 0.8rem;
         }
 
-        footer::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 3px;
-            top: 0;
-            left: -100%;
-            background: linear-gradient(90deg, #74ebd5, #ACB6E5);
-            transition: left 0.6s ease;
+        .text-base-sm {
+            font-size: 0.9rem;
+        }
+
+        .text-lg-sm {
+            font-size: 1.1rem;
         }
     </style>
 </head>
 
-<body>
-    <div class="header">
-        Table Operations - {{ table }}
-    </div>
+<body class="font-inter text-gray-200">
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
 
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="/">Home</a> > <a href="/show_tables/">Tables</a> > <strong class="db-highlight">{{ table }}</strong> > Operations
-        </div>
+    <!-- Static Database Grid -->
+    <div class="database-grid"></div>
 
-        <!-- Tab Container -->
-        <div class="tab-container">
-            <div class="tab-buttons">
-                <button class="tab-btn active" onclick="showTab('insert')">Insert Records</button>
-                <button class="tab-btn" onclick="showTab('update')">Update Table</button>
-                
-            </div>
+    <!-- Static Data Nodes -->
+    <div class="data-node" style="top: 15%; left: 10%;"></div>
+    <div class="data-node" style="top: 70%; right: 15%;"></div>
+    <div class="data-node" style="bottom: 40%; left: 20%;"></div>
+    <div class="data-node" style="top: 50%; right: 25%;"></div>
 
-            <div class="tab-content">
-                <!-- Insert Records Tab -->
-                <div id="insert-tab" class="section" style="margin: 0; border-radius: 0;">
-                    <div class="section-title">Insert Records into <span class="db-highlight">{{ table }}</span></div>
-                    <div class="section-description">
-                        Add new records to your table. You can specify how many records you want to insert at once.
+    <!-- Compact Navigation -->
+    <nav class="nav-glass sticky top-0">
+        <div class="container mx-auto px-4 py-2">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-6 h-6 bg-gradient-to-br from-blue-500/25 to-blue-600/10 rounded flex items-center justify-center border border-blue-500/20">
+                        <i class="fas fa-database text-blue-400 text-xs"></i>
                     </div>
-
-                    <form class="operation-form" action="/insert/" method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label class="form-label" for="record-count">Number of Records to Insert:</label>
-                            <input type="number" id="record-count" name="records" class="form-input" value="1" min="1"max="100" placeholder="Enter number of records">
-                        </div>
-                        <div>
-                            <button type="submit" class="btn">Insert Records</button>
-                        </div>
-                    </form>
+                    <span class="text-sm font-semibold text-white">MySQL Manager</span>
+                    <span class="text-xs px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded-full">Operations</span>
                 </div>
 
-                <div id="update-tab" class="section" style="margin: 0; border-radius: 0; display: none;">
-                    <div class="section-title">Update Table <span class="db-highlight">{{ table }}</span></div>
-                    <div class="section-description">
-                        Modify existing records in your table. You can update specific records based on conditions.
+                <div class="flex items-center space-x-3">
+                    <a href="http://127.0.0.1:8000/home/" class="text-xs-sm text-gray-300 hover:text-blue-400 transition-colors duration-150">
+                        <i class="fas fa-home mr-1"></i>Home
+                    </a>
+                    <a href="http://127.0.0.1:8000/work/" class="text-xs-sm text-gray-300 hover:text-green-400 transition-colors duration-150">
+                        <i class="fas fa-edit mr-1"></i>Workshop
+                    </a>
+                    <div class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs-sm font-medium border border-emerald-400/20">
+                        <span class="relative flex h-1.5 w-1.5 mr-1">
+                            <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                        </span>
+                        Connected
                     </div>
-
-                    <form class="operation-form" action="/update_records/" method="get">
-                        <div>
-                            <button type="submit" class="btn btn-warning">Update Records</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
+    </nav>
 
-        <div class="button-container">
-            <a href="/show_tables/" class="btn btn-blue">← Back to Tables</a>
-            <a href="/show_tables/" class="btn btn-blue">View Table Data</a>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-5 relative z-10">
+        <!-- Compact Hero Section -->
+        <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-lg border border-purple-500/20 flex items-center justify-center mr-3">
+                    <i class="fas fa-cogs text-purple-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg-sm font-bold hero-gradient mb-0.5">
+                        Table Operations
+                    </h1>
+                    <p class="text-gray-400 text-xs-sm">
+                        <a href="/show_tables/" class="text-blue-400 hover:text-blue-300">Tables</a>
+                        <span class="text-gray-600 mx-1">›</span>
+                        <span class="text-white font-semibold">{{ table }}</span>
+                        <span class="text-gray-600 mx-1">›</span>
+                        <span class="text-green-400 font-medium">Operations</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Compact Action Button -->
+            <a href="/show_tables/" class="btn btn-primary text-white px-3 py-1.5 rounded-md text-xs-sm font-semibold inline-flex items-center">
+                <i class="fas fa-arrow-left mr-1"></i>Back to Tables
+            </a>
         </div>
-    </div>
 
-    <footer>
-        <p>&copy; 2025 MySQL Manager | <a href="https://www.linkedin.com/in/aniketgavali">Aniket Gavali</a></p>
-        <p>Made with ❤️ for database enthusiasts</p>
-    </footer>
+        <!-- Compact Tab Container -->
+        <div class="max-w-2xl mx-auto">
+            <div class="card-hover rounded-xl overflow-hidden mb-4">
+                <!-- Compact Tab Buttons -->
+                <div class="tab-container">
+                    <button class="tab-btn active" onclick="showTab('insert')">
+                        <i class="fas fa-plus-circle"></i>Insert Records
+                    </button>
+                    <button class="tab-btn" onclick="showTab('update')">
+                        <i class="fas fa-edit"></i>Update Table
+                    </button>
+                </div>
 
+                <!-- Insert Tab -->
+                <div id="insert-tab" class="tab-content">
+                    <div class="mb-5">
+                        <h2 class="text-base font-bold text-white mb-1.5 flex items-center">
+                            <div class="w-6 h-6 bg-green-500/20 rounded flex items-center justify-center mr-2">
+                                <i class="fas fa-plus text-green-400 text-xs"></i>
+                            </div>
+                            Insert Records into <span class="text-green-400 ml-1">{{ table }}</span>
+                        </h2>
+                        <p class="text-gray-400 text-xs-sm mb-5">
+                            Add new records to your table. Specify how many records you want to insert at once.
+                        </p>
+                    </div>
+
+                    <div class="operation-card">
+                        <form class="space-y-5" action="/insert/" method="post">
+                            {% csrf_token %}
+                            
+                            <div>
+                                <label class="block text-xs-sm font-semibold text-white mb-2 flex items-center">
+                                    <div class="w-5 h-5 bg-blue-500/20 rounded flex items-center justify-center mr-2">
+                                        <i class="fas fa-hashtag text-blue-400 text-xs"></i>
+                                    </div>
+                                    Number of Records
+                                </label>
+                                <input type="number" 
+                                       id="record-count" 
+                                       name="records" 
+                                       class="input-premium w-full px-3 py-2.5 text-base-sm rounded-md font-medium text-center"
+                                       value="1" 
+                                       min="1" 
+                                       max="100" 
+                                       placeholder="Enter number of records"
+                                       required>
+                                <p class="text-xs text-gray-500 mt-2 text-center">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Enter how many new records you want to add
+                                </p>
+                            </div>
+
+                            <div class="pt-3 border-t border-gray-700/50">
+                                <button type="submit" 
+                                        class="btn btn-success text-white px-5 py-2.5 rounded-md text-xs-sm font-semibold inline-flex items-center justify-center w-full">
+                                    <i class="fas fa-plus-circle mr-1.5"></i>Insert Records
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Update Tab -->
+                <div id="update-tab" class="tab-content" style="display: none;">
+                    <div class="mb-5">
+                        <h2 class="text-base font-bold text-white mb-1.5 flex items-center">
+                            <div class="w-6 h-6 bg-yellow-500/20 rounded flex items-center justify-center mr-2">
+                                <i class="fas fa-edit text-yellow-400 text-xs"></i>
+                            </div>
+                            Update Records in <span class="text-yellow-400 ml-1">{{ table }}</span>
+                        </h2>
+                        <p class="text-gray-400 text-xs-sm mb-5">
+                            Modify existing records in your table. Update specific records based on conditions.
+                        </p>
+                    </div>
+
+                    <div class="operation-card">
+                        <div class="text-center py-4">
+                            <div class="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-500/10 to-amber-500/10 rounded-full flex items-center justify-center mb-3 border border-yellow-500/20">
+                                <i class="fas fa-edit text-2xl text-yellow-400"></i>
+                            </div>
+                            <h3 class="text-sm-sm font-semibold text-white mb-2">Update Table Records</h3>
+                            <p class="text-gray-400 text-xs-sm mb-4 max-w-md mx-auto">
+                                Modify existing data in your table. Update specific records or modify all records at once.
+                            </p>
+                            
+                            <form action="/update_records/" method="get">
+                                <button type="submit" 
+                                        class="btn btn-warning text-white px-6 py-2.5 rounded-md text-xs-sm font-semibold inline-flex items-center justify-center">
+                                    <i class="fas fa-sync-alt mr-1.5"></i>Update Records
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compact Safety Tips Card -->
+            <div class="card-hover rounded-lg p-4">
+                <h3 class="text-xs-sm font-bold text-white mb-2.5 flex items-center">
+                    <i class="fas fa-shield-alt text-blue-400 mr-1.5 text-xs"></i>
+                    Safety Guidelines
+                </h3>
+                <div class="space-y-2">
+                    <div class="flex items-start space-x-2">
+                        <div class="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1 flex-shrink-0"></div>
+                        <div>
+                            <p class="text-xs-sm font-semibold text-white">Insert Safely</p>
+                            <p class="text-gray-400 text-xs">Start with 1-5 records to test before bulk inserts</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-1 flex-shrink-0"></div>
+                        <div>
+                            <p class="text-xs-sm font-semibold text-white">Update Carefully</p>
+                            <p class="text-gray-400 text-xs">Always preview changes before updating</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mt-1 flex-shrink-0"></div>
+                        <div>
+                            <p class="text-xs-sm font-semibold text-white">Backup First</p>
+                            <p class="text-gray-400 text-xs">Create backup before major operations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PERFORMANCE OPTIMIZED JavaScript -->
     <script>
+        // Get cursor elements
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        
+        // Mouse position tracking - SIMPLIFIED for performance
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+        
+        // Update mouse position
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Update cursor dot immediately
+            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+            
+            // Smooth interpolation for outer cursor
+            cursorX += (mouseX - cursorX) * 0.5;
+            cursorY += (mouseY - cursorY) * 0.5;
+            
+            cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+        }, { passive: true });
+        
+        // Hover effects - OPTIMIZED
+        function setupHoverEffects() {
+            // Get all hoverable elements
+            const elements = [
+                ...document.querySelectorAll('a'),
+                ...document.querySelectorAll('button'),
+                ...document.querySelectorAll('.btn'),
+                ...document.querySelectorAll('.card-hover'),
+                ...document.querySelectorAll('.tab-btn'),
+                ...document.querySelectorAll('.operation-card'),
+                ...document.querySelectorAll('input')
+            ];
+            
+            elements.forEach(element => {
+                // Mouse enter - simplified
+                element.addEventListener('mouseenter', () => {
+                    cursor.style.width = '28px';
+                    cursor.style.height = '28px';
+                    
+                    // Check element type for color
+                    const isWarning = element.classList.contains('btn-warning') || 
+                                    element.closest('.btn-warning');
+                    
+                    const isSuccess = element.classList.contains('btn-success') || 
+                                    element.closest('.btn-success');
+                    
+                    if (isWarning) {
+                        cursor.style.borderColor = 'rgba(245, 158, 11, 0.9)';
+                        cursor.style.background = 'rgba(245, 158, 11, 0.08)';
+                    } else if (isSuccess) {
+                        cursor.style.borderColor = 'rgba(16, 185, 129, 0.9)';
+                        cursor.style.background = 'rgba(16, 185, 129, 0.08)';
+                    } else {
+                        cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
+                        cursor.style.background = 'rgba(59, 130, 246, 0.08)';
+                    }
+                }, { passive: true });
+                
+                // Mouse leave - simplified
+                element.addEventListener('mouseleave', () => {
+                    cursor.style.width = '16px';
+                    cursor.style.height = '16px';
+                    cursor.style.borderColor = 'rgba(59, 130, 246, 0.85)';
+                    cursor.style.background = 'transparent';
+                }, { passive: true });
+            });
+        }
+        
+        // Click effects - simplified
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '12px';
+            cursor.style.height = '12px';
+        }, { passive: true });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '16px';
+            cursor.style.height = '16px';
+        }, { passive: true });
+        
+        // Initialize cursor position
+        window.addEventListener('load', () => {
+            // Set initial position to center
+            cursorX = window.innerWidth / 2;
+            cursorY = window.innerHeight / 2;
+            mouseX = cursorX;
+            mouseY = cursorY;
+            
+            cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            cursorDot.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            
+            // Setup hover effects
+            setupHoverEffects();
+        });
+        
+        // Tab switching function
         function showTab(tabName) {
             // Hide all tabs
             document.getElementById('insert-tab').style.display = 'none';
             document.getElementById('update-tab').style.display = 'none';
-
+            
             // Remove active class from all buttons
             const buttons = document.querySelectorAll('.tab-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-
+            
             // Show selected tab
             document.getElementById(tabName + '-tab').style.display = 'block';
-
+            
             // Add active class to clicked button
             event.target.classList.add('active');
         }
@@ -318,5 +563,4 @@
         });
     </script>
 </body>
-
 </html>

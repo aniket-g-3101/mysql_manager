@@ -13,60 +13,57 @@
         * {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            cursor: none;
+            cursor: none !important;
         }
 
-        /* Custom cursor */
+        /* Optimized Custom Cursor */
         .custom-cursor {
             position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(59, 130, 246, 0.8);
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(59, 130, 246, 0.85);
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            top: 0;
-            left: 0;
-            will-change: transform;
             mix-blend-mode: screen;
+            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
 
         .cursor-dot {
             position: fixed;
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: #3b82f6;
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            top: 0;
-            left: 0;
-            will-change: transform;
             mix-blend-mode: screen;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* Base styles */
         body {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
             font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
 
-        /* Static grid background */
+        /* Database Grid */
         .database-grid {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-image: linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 35px 35px;
             background-position: center center;
             z-index: 0;
             pointer-events: none;
@@ -75,33 +72,32 @@
         /* Static data nodes */
         .data-node {
             position: fixed;
-            width: 8px;
-            height: 8px;
-            background: rgba(59, 130, 246, 0.6);
+            width: 6px;
+            height: 6px;
+            background: rgba(59, 130, 246, 0.5);
             border-radius: 50%;
             z-index: 2;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
         }
 
         .nav-glass {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.08);
             z-index: 50;
-            position: relative;
         }
 
         .card-hover {
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            transition: all 0.2s ease;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card-hover:hover {
-            border-color: rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: rgba(59, 130, 246, 0.25);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.15);
         }
 
         .hero-gradient {
@@ -111,72 +107,34 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .glow-border {
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1),
-                        inset 0 0 20px rgba(59, 130, 246, 0.05);
-        }
-
-        @keyframes cursorBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .terminal-cursor::after {
-            content: "|";
-            animation: cursorBlink 1s step-end infinite;
-            color: #3b82f6;
-            margin-left: 2px;
-        }
-
-        .status-pulse {
+        /* Buttons */
+        .btn {
             position: relative;
-        }
-
-        .status-pulse::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: inherit;
-            background: currentColor;
-            animation: pulseSoft 2s ease-in-out infinite;
-            opacity: 0.3;
-            z-index: -1;
-        }
-
-        @keyframes pulseSoft {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            transition: all 0.2s ease;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
         }
 
         .btn-success {
             background: linear-gradient(135deg, #10b981, #059669);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            transition: all 0.2s ease;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .btn-success:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
-        a, button, table, .card-hover {
-            cursor: none !important;
-        }
-
-        /* MODERN COMPACT TABLE */
+        /* Table Styles (keep existing) */
         .table-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -211,12 +169,6 @@
             white-space: nowrap;
         }
 
-        /* Center specific columns */
-        .modern-table thead th:nth-child(3),
-        .modern-table thead th:nth-child(4) {
-            text-align: center;
-        }
-
         .modern-table tbody tr {
             transition: all 0.15s ease;
             border-bottom: 1px solid rgba(59, 130, 246, 0.08);
@@ -226,10 +178,6 @@
             background: rgba(59, 130, 246, 0.08);
         }
 
-        .modern-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
         .modern-table tbody td {
             padding: 16px 18px;
             font-size: 14px;
@@ -237,33 +185,6 @@
             vertical-align: middle;
         }
 
-        /* Field column styling */
-        .modern-table tbody td:first-child {
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .modern-table tbody td:first-child i {
-            color: #fbbf24;
-            margin-right: 8px;
-            font-size: 12px;
-        }
-
-        /* Type column - monospace */
-        .modern-table tbody td:nth-child(2) {
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #c4b5fd;
-            font-weight: 500;
-        }
-
-        /* Null and Key columns - centered */
-        .modern-table tbody td:nth-child(3),
-        .modern-table tbody td:nth-child(4) {
-            text-align: center;
-        }
-
-        /* Compact badge for keys */
         .key-badge {
             display: inline-flex;
             align-items: center;
@@ -297,17 +218,6 @@
             border: none;
             border-bottom: 3px solid transparent;
             transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .tab-btn i {
-            margin-right: 8px;
-            font-size: 13px;
-        }
-
-        .tab-btn:hover {
-            color: #e5e7eb;
-            background: rgba(59, 130, 246, 0.05);
         }
 
         .tab-btn.active {
@@ -316,75 +226,22 @@
             border-bottom-color: #3b82f6;
         }
 
-        /* Content padding */
         .tab-content {
             padding: 28px;
         }
 
-        .tab-header {
-            margin-bottom: 20px;
-        }
-
-        .tab-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 6px;
-        }
-
-        .tab-header h2 span {
-            color: #a78bfa;
-        }
-
-        .tab-header p {
-            font-size: 13px;
-            color: #9ca3af;
-        }
-
-        /* Empty state */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
         }
 
-        .empty-state-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 16px;
-            background: rgba(59, 130, 246, 0.08);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(59, 130, 246, 0.15);
+        /* Text sizes */
+        .text-xs-sm {
+            font-size: 0.75rem;
         }
 
-        .empty-state-icon i {
-            font-size: 24px;
-            color: #6b7280;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-            color: #9ca3af;
-        }
-
-        /* Scrollbar */
-        .modern-table-wrapper::-webkit-scrollbar {
-            height: 10px;
-        }
-
-        .modern-table-wrapper::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.4);
-        }
-
-        .modern-table-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.3);
-            border-radius: 5px;
-        }
-
-        .modern-table-wrapper::-webkit-scrollbar-thumb:hover {
-            background: rgba(59, 130, 246, 0.5);
+        .text-sm-sm {
+            font-size: 0.8125rem;
         }
     </style>
 </head>
@@ -404,33 +261,30 @@
 
     <!-- Navigation -->
     <nav class="nav-glass sticky top-0">
-        <div class="container mx-auto px-6 py-3">
+        <div class="container mx-auto px-5 py-2.5">
             <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="relative">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500/30 to-blue-600/10 rounded-lg flex items-center justify-center glow-border">
-                            <i class="fas fa-database text-blue-400 text-xs"></i>
-                        </div>
-                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full status-pulse"></div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 bg-gradient-to-br from-blue-500/25 to-blue-600/10 rounded-lg flex items-center justify-center border border-blue-500/20">
+                        <i class="fas fa-database text-blue-400 text-xs"></i>
                     </div>
-                    <span class="text-base font-semibold text-white tracking-tight">MySQL Manager</span>
+                    <span class="text-base font-semibold text-white">MySQL Manager</span>
                     <span class="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full">Table View</span>
                 </div>
 
-                <div class="flex items-center space-x-6">
-                    <a href="http://127.0.0.1:8000/home/" class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200">
-                        <i class="fas fa-home mr-1.5"></i>Home
+                <div class="flex items-center space-x-4">
+                    <a href="http://127.0.0.1:8000/home/" class="text-xs-sm text-gray-300 hover:text-blue-400 transition-colors duration-150">
+                        <i class="fas fa-home mr-1"></i>Home
                     </a>
-                    <a href="http://127.0.0.1:8000/explore/" class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200">
-                        <i class="fas fa-search mr-1.5"></i>Explore
+                    <a href="http://127.0.0.1:8000/explore/" class="text-xs-sm text-gray-300 hover:text-blue-400 transition-colors duration-150">
+                        <i class="fas fa-search mr-1"></i>Explore
                     </a>
-                    <a href="http://127.0.0.1:8000/work/" class="text-sm text-gray-300 hover:text-green-400 transition-all duration-200">
-                        <i class="fas fa-edit mr-1.5"></i>Workshop
+                    <a href="http://127.0.0.1:8000/work/" class="text-xs-sm text-gray-300 hover:text-green-400 transition-colors duration-150">
+                        <i class="fas fa-edit mr-1"></i>Workshop
                     </a>
-                    <div class="relative inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-400/30">
-                        <span class="relative flex h-2 w-2 mr-1.5">
+                    <div class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs-sm font-medium border border-emerald-400/25">
+                        <span class="relative flex h-1.5 w-1.5 mr-1">
                             <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
-                            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                         </span>
                         Connected
                     </div>
@@ -440,18 +294,18 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-6 py-6 relative z-10">
+    <main class="container mx-auto px-5 py-6 relative z-10">
         <!-- Hero Section -->
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center">
-                <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl border border-purple-500/25 glow-border mr-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl border border-purple-500/20 flex items-center justify-center mr-4">
                     <i class="fas fa-table text-lg text-purple-400"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold hero-gradient terminal-cursor">
+                    <h1 class="text-xl font-bold hero-gradient mb-1">
                         Table View
                     </h1>
-                    <p class="text-gray-400 text-xs mt-1">
+                    <p class="text-gray-400 text-xs-sm">
                         <a href="/show_tables/" class="text-blue-400 hover:text-blue-300">Work Area</a>
                         <span class="text-gray-600 mx-1.5">›</span>
                         <span class="text-green-400 font-medium">{{ selected_db }}</span>
@@ -463,10 +317,10 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center gap-3">
-                <a href="http://127.0.0.1:8000/show_tables/" class="btn-primary text-white px-4 py-2 rounded-lg text-xs font-medium inline-flex items-center">
+                <a href="http://127.0.0.1:8000/show_tables/" class="btn btn-primary text-white px-4 py-2 rounded-lg text-xs-sm font-semibold inline-flex items-center">
                     <i class="fas fa-arrow-left mr-2"></i>Back
                 </a>
-                <a href="http://127.0.0.1:8000/edit_table/" class="btn-success text-white px-4 py-2 rounded-lg text-xs font-medium inline-flex items-center">
+                <a href="http://127.0.0.1:8000/edit_table/" class="btn btn-success text-white px-4 py-2 rounded-lg text-xs-sm font-semibold inline-flex items-center">
                     <i class="fas fa-edit mr-2"></i>Edit Table
                 </a>
             </div>
@@ -477,13 +331,13 @@
         <div class="mb-6">
             <div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 rounded-full">
                 <div class="w-2 h-2 bg-red-400 rounded-full mr-2.5 animate-pulse"></div>
-                <span class="text-red-300 text-xs font-medium">{{ error }}</span>
+                <span class="text-red-300 text-xs-sm font-medium">{{ error }}</span>
             </div>
         </div>
         {% endif %}
 
         {% if table_name %}
-        <!-- Table Container with Max Width -->
+        <!-- Table Container -->
         <div class="table-container">
             <div class="card-hover rounded-2xl overflow-hidden">
                 <!-- Modern Tabs -->
@@ -590,65 +444,148 @@
         {% endif %}
     </main>
 
-    <!-- JavaScript -->
+    <!-- Working JavaScript -->
     <script>
-        // Custom cursor
+        // Get cursor elements
         const cursor = document.querySelector('.custom-cursor');
         const cursorDot = document.querySelector('.cursor-dot');
-
-        let rafId = null;
-        let mouseX = 0, mouseY = 0;
-
+        
+        // Mouse position tracking
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        // Cursor position for smooth interpolation
+        let cursorX = 0;
+        let cursorY = 0;
+        let dotX = 0;
+        let dotY = 0;
+        
+        // Animation control
+        let isAnimating = false;
+        let animationId = null;
+        
+        // Update mouse position
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             
-            if (!rafId) {
-                rafId = requestAnimationFrame(updateCursor);
+            // Start animation if not already running
+            if (!isAnimating) {
+                isAnimating = true;
+                animateCursor();
             }
-        }, { passive: true });
-
-        function updateCursor() {
-            cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-            rafId = null;
-        }
-
-        // Hover effects
-        const hoverElements = document.querySelectorAll('a, button, table, .card-hover, .tab-btn');
-        hoverElements.forEach((el) => {
-            el.addEventListener('mouseenter', () => {
-                cursor.style.width = '30px';
-                cursor.style.height = '30px';
-                cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
-                cursor.style.background = 'rgba(59, 130, 246, 0.1)';
-            }, { passive: true });
-            el.addEventListener('mouseleave', () => {
-                cursor.style.width = '20px';
-                cursor.style.height = '20px';
-                cursor.style.borderColor = 'rgba(59, 130, 246, 0.8)';
-                cursor.style.background = 'transparent';
-            }, { passive: true });
         });
-
-        // Click effect
+        
+        // Smooth cursor animation
+        function animateCursor() {
+            // Smooth interpolation for outer cursor (slower)
+            cursorX += (mouseX - cursorX) * 0.15;
+            cursorY += (mouseY - cursorY) * 0.15;
+            
+            // Faster interpolation for dot (follows more closely)
+            dotX += (mouseX - dotX) * 0.3;
+            dotY += (mouseY - dotY) * 0.3;
+            
+            // Apply transforms
+            cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            cursorDot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+            
+            // Continue animation if mouse is still moving
+            const distance = Math.sqrt((mouseX - cursorX) ** 2 + (mouseY - cursorY) ** 2);
+            if (distance > 0.5) {
+                animationId = requestAnimationFrame(animateCursor);
+            } else {
+                isAnimating = false;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            }
+        }
+        
+        // Hover effects - simplified and working
+        function setupHoverEffects() {
+            // Get all hoverable elements
+            const hoverElements = [
+                ...document.querySelectorAll('a'),
+                ...document.querySelectorAll('button'),
+                ...document.querySelectorAll('.btn'),
+                ...document.querySelectorAll('.card-hover'),
+                ...document.querySelectorAll('.tab-btn'),
+                ...document.querySelectorAll('.modern-table tr'),
+                ...document.querySelectorAll('.key-badge')
+            ];
+            
+            hoverElements.forEach(element => {
+                // Mouse enter
+                element.addEventListener('mouseenter', () => {
+                    cursor.style.width = '32px';
+                    cursor.style.height = '32px';
+                    
+                    // Check button type for color
+                    if (element.classList.contains('btn-success') || 
+                        element.closest('.btn-success')) {
+                        cursor.style.borderColor = 'rgba(16, 185, 129, 0.9)';
+                        cursor.style.background = 'rgba(16, 185, 129, 0.1)';
+                    } else {
+                        cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
+                        cursor.style.background = 'rgba(59, 130, 246, 0.1)';
+                    }
+                });
+                
+                // Mouse leave
+                element.addEventListener('mouseleave', () => {
+                    cursor.style.width = '18px';
+                    cursor.style.height = '18px';
+                    cursor.style.borderColor = 'rgba(59, 130, 246, 0.85)';
+                    cursor.style.background = 'transparent';
+                });
+            });
+        }
+        
+        // Click effects
         document.addEventListener('mousedown', () => {
-            cursor.style.width = '16px';
-            cursor.style.height = '16px';
-        }, { passive: true });
-
+            cursor.style.width = '14px';
+            cursor.style.height = '14px';
+        });
+        
         document.addEventListener('mouseup', () => {
-            cursor.style.width = '20px';
-            cursor.style.height = '20px';
-        }, { passive: true });
-
-        // Tab switching
+            cursor.style.width = '18px';
+            cursor.style.height = '18px';
+        });
+        
+        // Initialize cursor position
+        window.addEventListener('load', () => {
+            // Set initial position to center
+            cursorX = window.innerWidth / 2;
+            cursorY = window.innerHeight / 2;
+            dotX = cursorX;
+            dotY = cursorY;
+            
+            cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            cursorDot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+            
+            // Setup hover effects
+            setupHoverEffects();
+        });
+        
+        // Re-setup hover effects when DOM changes (for dynamic content)
+        const observer = new MutationObserver(() => {
+            setupHoverEffects();
+        });
+        
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true 
+        });
+        
+        // Tab switching function
         function showTab(tabName) {
             // Hide all tabs
             document.getElementById('structure-tab').style.display = 'none';
             document.getElementById('data-tab').style.display = 'none';
             
-            // Remove active class
+            // Remove active class from all buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -656,7 +593,7 @@
             // Show selected tab
             document.getElementById(tabName + '-tab').style.display = 'block';
             
-            // Add active class
+            // Add active class to clicked button
             event.target.classList.add('active');
         }
     </script>

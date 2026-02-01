@@ -13,69 +13,56 @@
         * {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            cursor: none;
+            cursor: none !important;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Custom cursor */
+        /* Optimized Custom Cursor - PERFORMANCE FOCUSED */
         .custom-cursor {
             position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(59, 130, 246, 0.8);
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(59, 130, 246, 0.85);
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            top: 0;
-            left: 0;
-            will-change: transform;
             mix-blend-mode: screen;
+            transition: width 0.1s ease, height 0.1s ease, background 0.1s ease, border-color 0.1s ease;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
 
         .cursor-dot {
             position: fixed;
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: #3b82f6;
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            top: 0;
-            left: 0;
-            will-change: transform;
             mix-blend-mode: screen;
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
         }
 
-        .cursor-hover {
-            border-color: rgba(96, 165, 250, 0.9);
-            background: rgba(59, 130, 246, 0.1);
+        /* Base styles */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
 
-        .cursor-hover .custom-cursor {
-            width: 30px;
-            height: 30px;
-        }
-
-        /* Static grid background */
+        /* Database Grid - Optimized */
         .database-grid {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
             background-position: center center;
             z-index: 0;
@@ -85,34 +72,32 @@
         /* Static data nodes */
         .data-node {
             position: fixed;
-            width: 8px;
-            height: 8px;
-            background: rgba(59, 130, 246, 0.6);
+            width: 6px;
+            height: 6px;
+            background: rgba(59, 130, 246, 0.5);
             border-radius: 50%;
             z-index: 2;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
         }
 
         .nav-glass {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.08);
             z-index: 50;
-            position: relative;
         }
 
         .card-hover {
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            transition: all 0.2s ease;
-            will-change: transform;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card-hover:hover {
-            border-color: rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px) translateZ(0);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: rgba(59, 130, 246, 0.25);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.15);
         }
 
         .feature-icon {
@@ -121,7 +106,7 @@
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
             border: 1px solid rgba(59, 130, 246, 0.25);
             backdrop-filter: blur(5px);
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .hero-gradient {
@@ -131,107 +116,64 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .glow-border {
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1),
-                        inset 0 0 20px rgba(59, 130, 246, 0.05);
-        }
-
-        .terminal-cursor::after {
-            content: "|";
-            animation: cursorBlink 1s step-end infinite;
-            color: #3b82f6;
-            margin-left: 2px;
-        }
-
-        @keyframes cursorBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .status-pulse {
+        /* Buttons - Faster transitions */
+        .btn {
             position: relative;
+            overflow: hidden;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .status-pulse::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: inherit;
-            background: currentColor;
-            animation: pulseSoft 2s ease-in-out infinite;
-            opacity: 0.3;
-            z-index: -1;
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        @keyframes pulseSoft {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
         }
 
         /* Database card styles */
         .db-card {
             background: rgba(30, 41, 59, 0.9);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(59, 130, 246, 0.2);
             border-left: 3px solid #3b82f6;
-            transition: all 0.2s ease;
-            will-change: transform;
+            transition: all 0.15s ease;
         }
 
         .db-card:hover {
             border-color: rgba(59, 130, 246, 0.4);
-            transform: translateY(-2px) translateZ(0);
+            transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
 
         .input-glow {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            transition: all 0.2s ease;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1.5px solid rgba(59, 130, 246, 0.15);
+            transition: all 0.15s ease;
+            color: #ffffff;
+            font-size: 0.875rem;
         }
 
         .input-glow:focus {
             outline: none;
-            border-color: rgba(59, 130, 246, 0.6);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
             background: rgba(30, 41, 59, 0.9);
         }
 
-        /* Action buttons */
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            transition: all 0.2s ease;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-danger:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
+        /* Spinner */
         .spinner {
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-top: 2px solid white;
@@ -248,11 +190,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Interactive elements show custom cursor */
-        a, button, .clickable, input, .db-card {
-            cursor: none;
-        }
-
         /* List format for databases */
         .db-list {
             display: flex;
@@ -265,6 +202,15 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             max-width: 100%;
+        }
+
+        /* Text sizes */
+        .text-xs-sm {
+            font-size: 0.75rem;
+        }
+
+        .text-sm-sm {
+            font-size: 0.8125rem;
         }
     </style>
 </head>
@@ -284,30 +230,27 @@
 
     <!-- Navigation -->
     <nav class="nav-glass sticky top-0">
-        <div class="container mx-auto px-6 py-3">
+        <div class="container mx-auto px-5 py-2.5">
             <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="relative">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500/30 to-blue-600/10 rounded-lg flex items-center justify-center glow-border">
-                            <i class="fas fa-database text-blue-400 text-xs"></i>
-                        </div>
-                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full status-pulse"></div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-7 h-7 bg-gradient-to-br from-blue-500/25 to-blue-600/10 rounded-lg flex items-center justify-center border border-blue-500/20">
+                        <i class="fas fa-database text-blue-400 text-xs"></i>
                     </div>
-                    <span class="text-base font-semibold text-white tracking-tight">MySQL Manager</span>
+                    <span class="text-base font-semibold text-white">MySQL Manager</span>
                     <span class="text-xs px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full">Explore</span>
                 </div>
 
-                <div class="flex items-center space-x-6">
-                    <a href="http://127.0.0.1:8000/home/" class="text-sm text-gray-300 hover:text-blue-400 transition-all duration-200 clickable">
-                        <i class="fas fa-home mr-1.5"></i>Home
+                <div class="flex items-center space-x-4">
+                    <a href="http://127.0.0.1:8000/home/" class="text-xs-sm text-gray-300 hover:text-blue-400 transition-colors duration-150">
+                        <i class="fas fa-home mr-1"></i>Home
                     </a>
-                    <a href="http://127.0.0.1:8000/work/" class="text-sm text-gray-300 hover:text-green-400 transition-all duration-200 clickable">
-                        <i class="fas fa-edit mr-1.5"></i>Query Workshop
+                    <a href="http://127.0.0.1:8000/work/" class="text-xs-sm text-gray-300 hover:text-green-400 transition-colors duration-150">
+                        <i class="fas fa-edit mr-1"></i>Query Workshop
                     </a>
-                    <div class="relative inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-400/30">
-                        <span class="relative flex h-2 w-2 mr-1.5">
+                    <div class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs-sm font-medium border border-emerald-400/25">
+                        <span class="relative flex h-1.5 w-1.5 mr-1">
                             <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
-                            <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                         </span>
                         Connected
                     </div>
@@ -317,17 +260,17 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-6 py-6 relative z-10">
+    <main class="container mx-auto px-5 py-6 relative z-10">
         <!-- Hero Section - Left Corner -->
         <div class="flex items-center mb-6">
-            <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl border border-blue-500/25 glow-border mr-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl border border-blue-500/20 flex items-center justify-center mr-4">
                 <i class="fas fa-search text-lg text-blue-400"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold hero-gradient terminal-cursor">
+                <h1 class="text-xl font-bold hero-gradient mb-1">
                     Database Explorer
                 </h1>
-                <p class="text-gray-400 text-xs mt-1">
+                <p class="text-gray-400 text-xs-sm">
                     Browse, create, and manage your MySQL databases with an intuitive visual interface.
                 </p>
             </div>
@@ -343,11 +286,11 @@
                     </div>
                     <div class="flex-1">
                         <h3 class="text-base font-semibold text-white mb-1">Available Databases</h3>
-                        <p class="text-gray-400 text-xs">View all databases on your MySQL server</p>
+                        <p class="text-gray-400 text-xs-sm">View all databases on your MySQL server</p>
                     </div>
                 </div>
 
-                <button id="refreshBtn" type="button" class="btn-primary text-white px-5 py-2.5 rounded-lg text-sm font-medium w-full clickable mb-5">
+                <button id="refreshBtn" type="button" class="btn btn-primary text-white px-5 py-2.5 rounded-lg text-sm-sm font-medium w-full mb-5">
                     <i class="fas fa-sync-alt mr-2"></i>Refresh Database List
                 </button>
 
@@ -362,7 +305,7 @@
                     </div>
                     <div class="db-list">
                         {% for db in databases %}
-                        <div class="db-card rounded-lg p-3 clickable">
+                        <div class="db-card rounded-lg p-3">
                             <div class="flex items-center">
                                 <div class="w-9 h-9 bg-blue-500/10 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
                                     <i class="fas fa-database text-blue-400 text-sm"></i>
@@ -381,7 +324,7 @@
                     <div class="w-14 h-14 mx-auto bg-gray-800/50 rounded-full flex items-center justify-center mb-3">
                         <i class="fas fa-database text-gray-500 text-lg"></i>
                     </div>
-                    <p class="text-gray-400 text-xs">No databases loaded. Click "Refresh Database List" to load databases.</p>
+                    <p class="text-gray-400 text-xs-sm">No databases loaded. Click "Refresh Database List" to load databases.</p>
                 </div>
                 {% endif %}
                 </div>
@@ -397,7 +340,7 @@
                         </div>
                         <div class="flex-1">
                             <h3 class="text-base font-semibold text-white mb-1">Create New Database</h3>
-                            <p class="text-gray-400 text-xs">Create a new MySQL database with custom name</p>
+                            <p class="text-gray-400 text-xs-sm">Create a new MySQL database with custom name</p>
                         </div>
                     </div>
 
@@ -411,10 +354,10 @@
                                    id="createInput"
                                    name="db_name" 
                                    placeholder="Enter database name (e.g., my_database)"
-                                   class="input-glow w-full px-3 py-2.5 text-sm rounded-lg text-white placeholder-gray-500"
+                                   class="input-glow w-full px-3 py-2.5 text-sm-sm rounded-lg text-white placeholder-gray-500"
                                    required>
                         </div>
-                        <button type="submit" id="createBtn" class="btn-primary text-white px-5 py-2.5 rounded-lg text-sm font-medium w-full clickable">
+                        <button type="submit" id="createBtn" class="btn btn-primary text-white px-5 py-2.5 rounded-lg text-sm-sm font-medium w-full">
                             <i class="fas fa-plus-circle mr-2"></i>Create Database
                         </button>
                     </form>
@@ -430,7 +373,7 @@
                         </div>
                         <div class="flex-1">
                             <h3 class="text-base font-semibold text-white mb-1">Delete Database</h3>
-                            <p class="text-gray-400 text-xs">Permanently remove a database (Warning: This action cannot be undone)</p>
+                            <p class="text-gray-400 text-xs-sm">Permanently remove a database (Warning: This action cannot be undone)</p>
                         </div>
                     </div>
 
@@ -444,10 +387,10 @@
                                    id="deleteInput"
                                    name="deldb" 
                                    placeholder="Enter exact database name"
-                                   class="input-glow w-full px-3 py-2.5 text-sm rounded-lg text-white placeholder-gray-500"
+                                   class="input-glow w-full px-3 py-2.5 text-sm-sm rounded-lg text-white placeholder-gray-500"
                                    required>
                         </div>
-                        <button type="submit" id="deleteBtn" class="btn-danger text-white px-5 py-2.5 rounded-lg text-sm font-medium w-full clickable">
+                        <button type="submit" id="deleteBtn" class="btn btn-danger text-white px-5 py-2.5 rounded-lg text-sm-sm font-medium w-full">
                             <i class="fas fa-trash-alt mr-2"></i>Delete Database
                         </button>
                     </form>
@@ -460,29 +403,29 @@
         <!-- Quick Tips -->
         <div class="max-w-4xl mx-auto mt-10">
             <div class="card-hover rounded-xl p-5">
-                <h3 class="text-xs font-semibold text-white mb-3 flex items-center">
+                <h3 class="text-xs-sm font-semibold text-white mb-3 flex items-center">
                     <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
                     Quick Tips
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="flex items-start space-x-2">
-                        <div class="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1.5 animate-pulse"></div>
+                        <div class="w-1.5 h-1.5 bg-blue-400 rounded-full mt-1.5"></div>
                         <div>
-                            <p class="text-xs font-medium text-white mb-0.5">Database Naming</p>
+                            <p class="text-xs-sm font-medium text-white mb-0.5">Database Naming</p>
                             <p class="text-gray-400 text-xs">Use lowercase with underscores for best practices</p>
                         </div>
                     </div>
                     <div class="flex items-start space-x-2">
-                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mt-1.5 animate-pulse" style="animation-delay: 0.2s"></div>
+                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mt-1.5"></div>
                         <div>
-                            <p class="text-xs font-medium text-white mb-0.5">Backup First</p>
+                            <p class="text-xs-sm font-medium text-white mb-0.5">Backup First</p>
                             <p class="text-gray-400 text-xs">Always backup data before deleting databases</p>
                         </div>
                     </div>
                     <div class="flex items-start space-x-2">
-                        <div class="w-1.5 h-1.5 bg-purple-400 rounded-full mt-1.5 animate-pulse" style="animation-delay: 0.4s"></div>
+                        <div class="w-1.5 h-1.5 bg-purple-400 rounded-full mt-1.5"></div>
                         <div>
-                            <p class="text-xs font-medium text-white mb-0.5">Refresh Often</p>
+                            <p class="text-xs-sm font-medium text-white mb-0.5">Refresh Often</p>
                             <p class="text-gray-400 text-xs">Refresh the list after creating or deleting databases</p>
                         </div>
                     </div>
@@ -491,8 +434,140 @@
         </div>
     </main>
 
-    <!-- JavaScript -->
+    <!-- PERFORMANCE OPTIMIZED JavaScript -->
     <script>
+        // Get cursor elements
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        
+        // Mouse position tracking - SIMPLIFIED for performance
+        let mouseX = 0;
+        let mouseY = 0;
+        let cursorX = 0;
+        let cursorY = 0;
+        
+        // Debounce mouse move for better performance
+        let lastMouseUpdate = 0;
+        const MOUSE_UPDATE_INTERVAL = 16; // ~60fps
+        
+        // Update mouse position with throttling
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastMouseUpdate >= MOUSE_UPDATE_INTERVAL) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                lastMouseUpdate = now;
+                
+                // Update cursor dot immediately (fast follower)
+                cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+                
+                // Smooth interpolation for outer cursor
+                cursorX += (mouseX - cursorX) * 0.4; // Faster interpolation (0.4 vs 0.15)
+                cursorY += (mouseY - cursorY) * 0.4;
+                
+                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            }
+        }, { passive: true });
+        
+        // Hover effects - OPTIMIZED
+        const hoverElements = [];
+        let hoverSetupComplete = false;
+        
+        function setupHoverEffects() {
+            if (hoverSetupComplete) return;
+            
+            // Get all hoverable elements
+            const elements = [
+                ...document.querySelectorAll('a'),
+                ...document.querySelectorAll('button'),
+                ...document.querySelectorAll('.btn'),
+                ...document.querySelectorAll('.card-hover'),
+                ...document.querySelectorAll('.db-card'),
+                ...document.querySelectorAll('.feature-icon'),
+                ...document.querySelectorAll('input'),
+                ...document.querySelectorAll('form')
+            ];
+            
+            elements.forEach(element => {
+                // Mouse enter - simplified
+                element.addEventListener('mouseenter', () => {
+                    cursor.style.width = '32px';
+                    cursor.style.height = '32px';
+                    
+                    // Check element type for color - simplified logic
+                    const isDanger = element.classList.contains('btn-danger') || 
+                                   element.closest('.btn-danger') ||
+                                   (element.querySelector && element.querySelector('.fa-trash'));
+                    
+                    const isSuccess = element.classList.contains('feature-icon') && 
+                                    element.querySelector('.fa-plus');
+                    
+                    if (isDanger) {
+                        cursor.style.borderColor = 'rgba(239, 68, 68, 0.9)';
+                        cursor.style.background = 'rgba(239, 68, 68, 0.1)';
+                    } else if (isSuccess) {
+                        cursor.style.borderColor = 'rgba(16, 185, 129, 0.9)';
+                        cursor.style.background = 'rgba(16, 185, 129, 0.1)';
+                    } else {
+                        cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
+                        cursor.style.background = 'rgba(59, 130, 246, 0.1)';
+                    }
+                }, { passive: true });
+                
+                // Mouse leave - simplified
+                element.addEventListener('mouseleave', () => {
+                    cursor.style.width = '18px';
+                    cursor.style.height = '18px';
+                    cursor.style.borderColor = 'rgba(59, 130, 246, 0.85)';
+                    cursor.style.background = 'transparent';
+                }, { passive: true });
+            });
+            
+            hoverSetupComplete = true;
+        }
+        
+        // Click effects - simplified
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '14px';
+            cursor.style.height = '14px';
+        }, { passive: true });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '18px';
+            cursor.style.height = '18px';
+        }, { passive: true });
+        
+        // Initialize cursor position
+        window.addEventListener('load', () => {
+            // Set initial position to center
+            cursorX = window.innerWidth / 2;
+            cursorY = window.innerHeight / 2;
+            mouseX = cursorX;
+            mouseY = cursorY;
+            
+            cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            cursorDot.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            
+            // Setup hover effects after a short delay
+            setTimeout(setupHoverEffects, 100);
+        });
+        
+        // Re-setup hover effects when DOM changes (with debounce)
+        let observerTimeout;
+        const observer = new MutationObserver(() => {
+            clearTimeout(observerTimeout);
+            observerTimeout = setTimeout(() => {
+                hoverSetupComplete = false;
+                setupHoverEffects();
+            }, 300);
+        });
+        
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true 
+        });
+
+        // Utility functions
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -508,61 +583,8 @@
             return cookieValue;
         }
 
-        // Custom cursor - optimized
-        const cursor = document.querySelector('.custom-cursor');
-        const cursorDot = document.querySelector('.cursor-dot');
-
-        let rafId = null;
-        let mouseX = 0, mouseY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            if (!rafId) {
-                rafId = requestAnimationFrame(updateCursor);
-            }
-        }, { passive: true });
-
-        function updateCursor() {
-            cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-            rafId = null;
-        }
-
-        // Hover effects for cursor - optimized
-        function updateHoverListeners() {
-            const hoverElements = document.querySelectorAll('a, button, .clickable, .card-hover, .db-card, input');
-            hoverElements.forEach((el) => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.style.width = '30px';
-                    cursor.style.height = '30px';
-                    cursor.style.borderColor = 'rgba(96, 165, 250, 0.9)';
-                    cursor.style.background = 'rgba(59, 130, 246, 0.1)';
-                }, { passive: true });
-                el.addEventListener('mouseleave', () => {
-                    cursor.style.width = '20px';
-                    cursor.style.height = '20px';
-                    cursor.style.borderColor = 'rgba(59, 130, 246, 0.8)';
-                    cursor.style.background = 'transparent';
-                }, { passive: true });
-            });
-        }
-        updateHoverListeners();
-
-        // Click effect for cursor - optimized
-        document.addEventListener('mousedown', () => {
-            cursor.style.width = '16px';
-            cursor.style.height = '16px';
-        }, { passive: true });
-
-        document.addEventListener('mouseup', () => {
-            cursor.style.width = '20px';
-            cursor.style.height = '20px';
-        }, { passive: true });
-
-        // Refresh databases - optimized
-        document.getElementById('refreshBtn').addEventListener('click', async function() {
+        // Refresh databases
+        document.getElementById('refreshBtn')?.addEventListener('click', async function() {
             const btn = this;
             const original = btn.innerHTML;
             btn.disabled = true;
@@ -578,7 +600,8 @@
                     const container = document.getElementById('dbContainer');
                     requestAnimationFrame(() => {
                         container.innerHTML = newContent.innerHTML;
-                        updateHoverListeners();
+                        hoverSetupComplete = false;
+                        setupHoverEffects();
                     });
                 }
             } catch (e) {
@@ -590,7 +613,7 @@
         });
 
         // Create database
-        document.getElementById('createForm').addEventListener('submit', async function(e) {
+        document.getElementById('createForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('createBtn');
             const input = document.getElementById('createInput');
@@ -612,14 +635,14 @@
                 
                 const text = await res.text();
                 
-                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-full"><div class="w-2 h-2 bg-green-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-green-300 text-xs font-medium">Database created successfully!</span></div>';
+                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-full"><div class="w-2 h-2 bg-green-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-green-300 text-xs-sm font-medium">Database created successfully!</span></div>';
                 msg.style.display = 'block';
                 input.value = '';
                 
                 setTimeout(() => { msg.style.display = 'none'; }, 5000);
-                document.getElementById('refreshBtn').click();
+                document.getElementById('refreshBtn')?.click();
             } catch (e) {
-                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 rounded-full"><div class="w-2 h-2 bg-red-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-red-300 text-xs font-medium">Error creating database</span></div>';
+                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 rounded-full"><div class="w-2 h-2 bg-red-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-red-300 text-xs-sm font-medium">Error creating database</span></div>';
                 msg.style.display = 'block';
             }
             
@@ -628,7 +651,7 @@
         });
 
         // Delete database
-        document.getElementById('deleteForm').addEventListener('submit', async function(e) {
+        document.getElementById('deleteForm')?.addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('deleteBtn');
             const input = document.getElementById('deleteInput');
@@ -652,14 +675,14 @@
                 
                 const text = await res.text();
                 
-                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-full"><div class="w-2 h-2 bg-green-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-green-300 text-xs font-medium">Database deleted successfully!</span></div>';
+                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-full"><div class="w-2 h-2 bg-green-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-green-300 text-xs-sm font-medium">Database deleted successfully!</span></div>';
                 msg.style.display = 'block';
                 input.value = '';
                 
                 setTimeout(() => { msg.style.display = 'none'; }, 5000);
-                document.getElementById('refreshBtn').click();
+                document.getElementById('refreshBtn')?.click();
             } catch (e) {
-                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 rounded-full"><div class="w-2 h-2 bg-red-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-red-300 text-xs font-medium">Error deleting database</span></div>';
+                msg.innerHTML = '<div class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-red-500/10 to-rose-500/10 border border-red-500/30 rounded-full"><div class="w-2 h-2 bg-red-400 rounded-full mr-2.5 animate-pulse"></div><span class="text-red-300 text-xs-sm font-medium">Error deleting database</span></div>';
                 msg.style.display = 'block';
             }
             
