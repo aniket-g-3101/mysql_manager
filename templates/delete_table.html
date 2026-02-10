@@ -31,7 +31,7 @@
             border: 2px solid rgba(59, 130, 246, 0.85);
             border-radius: 50%;
             mix-blend-mode: screen;
-            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
+            transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, border-color 0.15s ease;
         }
 
         .cursor-dot {
@@ -48,11 +48,6 @@
             50% { transform: translate3d(0,-12px,0); }
         }
 
-        @keyframes pulseSoft {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.03); }
-        }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -64,9 +59,194 @@
             }
         }
 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @keyframes warningPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.9; }
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+            }
+        }
+
+        @keyframes shakeSlight {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        /* Modern Toast Animations */
+        @keyframes toastSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(100%) translateY(-50%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) translateY(-50%);
+            }
+        }
+
+        @keyframes toastSlideOut {
+            0% {
+                opacity: 1;
+                transform: translateX(0) translateY(-50%);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100%) translateY(-50%);
+            }
+        }
+
+        @keyframes toastPulse {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(16, 185, 129, 0.5);
+            }
+        }
+
+        @keyframes progressBar {
+            0% {
+                width: 100%;
+            }
+            100% {
+                width: 0%;
+            }
+        }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+        }
+
+        /* Modern Toast Styles */
+        .toast {
+            position: relative;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #10b981;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards,
+                       toastPulse 2s infinite 0.5s;
+            max-width: 380px;
+            overflow: hidden;
+            transform: translateY(-50%);
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+            animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .toast.error .toast-progress {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .toast.warning {
+            border-left-color: #f59e0b;
+            animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .toast.warning .toast-progress {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast.success .toast-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+            color: #10b981;
+        }
+
+        .toast.error .toast-icon {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+            color: #ef4444;
+        }
+
+        .toast.warning .toast-icon {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+            color: #f59e0b;
+        }
+
+        .toast-text {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 0.75rem;
+            color: rgba(156, 163, 175, 0.9);
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: rgba(156, 163, 175, 0.7);
+            cursor: none;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+
+        .toast-close:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 0 0 0 8px;
+            animation: progressBar 5s linear forwards;
         }
 
         /* Base styles */
@@ -93,7 +273,7 @@
             pointer-events: none;
         }
 
-        /* Data Nodes */
+        /* Data Nodes - Red themed for danger */
         .data-node {
             position: fixed;
             width: 6px;
@@ -120,12 +300,25 @@
         .card-hover {
             background: rgba(30, 41, 59, 0.9);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.12);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card-hover:hover {
-            border-color: rgba(239, 68, 68, 0.25);
+            border-color: rgba(59, 130, 246, 0.25);
+            transform: translate3d(0,-1px,0);
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .card-danger {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-danger:hover {
+            border-color: rgba(239, 68, 68, 0.3);
             transform: translate3d(0,-1px,0);
             box-shadow: 0 12px 25px rgba(239, 68, 68, 0.15);
         }
@@ -137,7 +330,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Buttons - Smaller */
+        /* Buttons */
         .btn {
             position: relative;
             overflow: hidden;
@@ -165,46 +358,98 @@
             box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
         }
 
-        /* Form Inputs - Smaller */
-        .input-premium {
+        .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: none;
+        }
+
+        /* Form Inputs */
+        .input-glow {
             background: rgba(30, 41, 59, 0.7);
-            border: 1.5px solid rgba(239, 68, 68, 0.15);
+            border: 1.5px solid rgba(59, 130, 246, 0.15);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             color: #ffffff;
             font-size: 0.875rem;
         }
 
-        .input-premium:focus {
+        .input-glow:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.7);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .input-glow::placeholder {
+            color: rgba(156, 163, 175, 0.6);
+        }
+
+        .input-danger {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1.5px solid rgba(239, 68, 68, 0.2);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #ffffff;
+            font-size: 0.875rem;
+        }
+
+        .input-danger:focus {
             outline: none;
             border-color: rgba(239, 68, 68, 0.7);
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
             background: rgba(30, 41, 59, 0.9);
         }
 
-        /* Animations */
-        .warning-icon {
-            animation: warningPulse 1.5s ease-in-out infinite;
+        .input-danger::placeholder {
+            color: rgba(156, 163, 175, 0.6);
         }
 
-        .container-fade-in {
-            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            opacity: 0;
+        /* Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-left: 4px solid #ef4444;
+            border-radius: 12px;
+            padding: 16px;
+            animation: slideIn 0.3s ease-out;
         }
 
-        .premium-badge {
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            padding: 3px 10px;
+        .warning-icon-pulse {
+            animation: warningPulse 2s ease-in-out infinite;
+        }
+
+        /* Table List Styles */
+        .table-item {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59, 130, 246, 0.15);
             border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            animation: pulseSoft 2s ease-in-out infinite;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.3s ease-out;
+            transform: translateZ(0);
         }
 
-        .success-message {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(5, 150, 105, 0.08));
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .table-item:hover {
+            border-color: rgba(239, 68, 68, 0.3);
+            transform: translate3d(0,-2px,0);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.15);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .table-item.selected {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .table-badge {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
         }
 
         /* Scrollbar */
@@ -218,13 +463,17 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #ef4444, #dc2626);
+            background: rgba(59, 130, 246, 0.3);
             border-radius: 8px;
             border: 2px solid rgba(30, 41, 59, 0.3);
         }
 
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+
         /* Performance optimizations */
-        a, button, input, .card-hover {
+        a, button, input, select, .card-hover, .card-danger, .toast, .toast-close, .table-item {
             cursor: none !important;
             transform: translateZ(0);
             backface-visibility: hidden;
@@ -242,10 +491,27 @@
         .text-base-sm {
             font-size: 0.9375rem;
         }
+
+        /* Search highlight */
+        .search-highlight {
+            background: rgba(251, 191, 36, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 
 <body class="font-inter text-gray-200">
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+
     <!-- Custom Cursor -->
     <div class="custom-cursor"></div>
     <div class="cursor-dot"></div>
@@ -268,7 +534,7 @@
                         <i class="fas fa-database text-blue-400 text-xs"></i>
                     </div>
                     <span class="text-base font-semibold text-white">MySQL Manager</span>
-                    <span class="premium-badge">Pro</span>
+                    <span class="text-xs px-2 py-0.5 bg-red-500/20 text-red-300 rounded-full">Delete Table</span>
                 </div>
 
                 <div class="flex items-center space-x-4">
@@ -282,9 +548,7 @@
                         <i class="fas fa-edit mr-1"></i>Workshop
                     </a>
                     <div class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs-sm font-medium border border-emerald-400/25">
-                       
-                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                        </span>
+                        <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                         Connected
                     </div>
                 </div>
@@ -295,7 +559,7 @@
     <!-- Main Content -->
     <main class="container mx-auto px-5 py-6 relative z-10">
         <!-- Hero Section -->
-        <div class="container-fade-in flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-6">
             <div class="flex items-center">
                 <div class="w-14 h-14 bg-gradient-to-br from-red-500/20 to-red-600/10 rounded-xl border border-red-500/20 flex items-center justify-center mr-4">
                     <i class="fas fa-trash-alt text-xl text-red-400"></i>
@@ -305,112 +569,180 @@
                         Delete Table
                     </h1>
                     <p class="text-gray-400 text-xs-sm">
+                        {% if database %}
+                        Permanently remove a table from <span class="text-blue-400 font-semibold">{{ database }}</span> database
+                        {% else %}
                         Permanently remove a table from your database
+                        {% endif %}
                     </p>
                 </div>
             </div>
 
             <!-- Back Button -->
             <a href="http://127.0.0.1:8000/show_tables/" class="btn btn-primary text-white px-4 py-2 rounded-lg text-xs-sm font-semibold inline-flex items-center">
-                <i class="fas fa-arrow-left mr-1.5"></i>Back
+                <i class="fas fa-arrow-left mr-1.5"></i>Back to Work Area
             </a>
         </div>
 
-        <!-- Delete Container -->
-        <div class="max-w-xl mx-auto">
-            <!-- Success Message -->
-            {% if message %}
-            <div class="success-message rounded-xl p-4 mb-5">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center mr-3">
-                        <i class="fas fa-check-circle text-green-400"></i>
-                    </div>
-                    <div>
-                        <p class="text-green-300 font-semibold text-xs-sm">{{ message }}</p>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <!-- Left Column - Table List -->
+            <div class="lg:col-span-2">
+                <div class="card-hover rounded-2xl p-6 sticky top-24">
+                    <h3 class="text-sm-sm font-semibold text-white mb-4 flex items-center justify-between">
+                        <span>
+                            <i class="fas fa-list text-blue-400 mr-2"></i>
+                            Available Tables
+                        </span>
+                        {% if tables %}
+                        <span class="table-badge">{{ tables|length }}</span>
+                        {% endif %}
+                    </h3>
 
-            <!-- Warning Card -->
-            <div class="card-hover rounded-2xl p-8 mb-6">
-                <!-- Warning Icon -->
-                <div class="flex justify-center mb-5">
-                    <div class="warning-icon w-20 h-20 bg-gradient-to-br from-red-500/20 to-red-600/10 rounded-full flex items-center justify-center border-3 border-red-500/25">
-                        <i class="fas fa-exclamation-triangle text-4xl text-red-400"></i>
+                    <!-- Search Bar -->
+                    <div class="mb-4">
+                        <div class="relative">
+                            <input type="text" 
+                                   id="searchTables" 
+                                   placeholder="Search tables..."
+                                   class="input-glow w-full px-4 py-2.5 pl-10 text-xs-sm rounded-lg">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Warning Text -->
-                <div class="text-center mb-6">
-                    <h2 class="text-lg font-bold text-white mb-2">⚠️ Danger Zone</h2>
-                    <p class="text-gray-400 text-sm-sm leading-relaxed">
-                        This action <span class="text-red-400 font-semibold">cannot be undone</span>. Deleting a table will permanently remove all data.
-                    </p>
-                </div>
-
-                <!-- Delete Form -->
-                <form method="POST" class="mb-5">
-                    {% csrf_token %}
-                    
-                    <div class="mb-5">
-                        <label class="block text-xs-sm font-semibold text-white mb-2.5 flex items-center justify-center">
-                            <div class="w-6 h-6 bg-red-500/20 rounded flex items-center justify-center mr-2">
-                                <i class="fas fa-keyboard text-red-400 text-xs"></i>
+                    <!-- Tables List -->
+                    <div id="tablesList" class="max-h-96 overflow-y-auto pr-2">
+                        {% if tables %}
+                            {% for table in tables %}
+                            <div class="table-item" data-table="{{ table }}" onclick="selectTable('{{ table }}')">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2 flex-1">
+                                        <i class="fas fa-table text-blue-400 text-xs"></i>
+                                        <span class="text-sm-sm font-medium text-white">{{ table }}</span>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                                </div>
                             </div>
-                            Enter Table Name to Confirm
-                        </label>
-                        <input type="text" 
-                               name="deltable" 
-                               placeholder="Type exact table name..."
-                               class="input-premium w-full px-4 py-3 text-sm-sm rounded-lg font-medium text-center"
-                               required
-                               autocomplete="off">
-                        <p class="text-xs text-gray-500 mt-2 text-center">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Type the exact table name to proceed
-                        </p>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-inbox text-4xl text-gray-500 mb-3"></i>
+                                <p class="text-gray-400 text-xs-sm">No tables found in this database</p>
+                            </div>
+                        {% endif %}
                     </div>
 
-                    <button type="submit" 
-                            class="btn btn-danger text-white px-6 py-3.5 rounded-lg text-sm-sm font-bold inline-flex items-center justify-center w-full">
-                        <i class="fas fa-trash-alt mr-2"></i>Delete Table Permanently
-                    </button>
-                </form>
-
-                <!-- Cancel Button -->
-                <a href="http://127.0.0.1:8000/show_tables/" 
-                   class="btn btn-primary text-white px-6 py-2.5 rounded-lg text-xs-sm font-semibold inline-flex items-center justify-center w-full">
-                    <i class="fas fa-times mr-1.5"></i>Cancel & Go Back
-                </a>
+                    <div id="noResults" class="empty-state" style="display: none;">
+                        <i class="fas fa-search text-3xl text-gray-500 mb-2"></i>
+                        <p class="text-gray-400 text-xs-sm">No tables match your search</p>
+                    </div>
+                </div>
             </div>
 
-            <!-- Safety Tips Card -->
-            <div class="card-hover rounded-xl p-5">
-                <h3 class="text-xs-sm font-bold text-white mb-3 flex items-center">
-                    <i class="fas fa-shield-alt text-blue-400 mr-2"></i>
-                    Safety Guidelines
-                </h3>
-                <div class="space-y-2.5">
-                    <div class="flex items-start space-x-2.5">
-                        <div class="w-1.5 h-1.5 bg-red-400 rounded-full mt-1 flex-shrink-0"></div>
-                        <div>
-                            <p class="text-xs-sm font-semibold text-white">Backup First</p>
-                            <p class="text-gray-400 text-xs">Create backup before deleting</p>
+            <!-- Right Column - Delete Form -->
+            <div class="lg:col-span-3">
+                <!-- Delete Form Card -->
+                <div class="card-danger rounded-2xl p-6 max-w-2xl">
+                    <form id="deleteTableForm" method="POST">
+                        {% csrf_token %}
+
+                        <!-- Warning Icon Center -->
+                        <div class="flex justify-center mb-4">
+                            <div class="w-16 h-16 bg-gradient-to-br from-red-500/20 to-red-600/10 rounded-full flex items-center justify-center border-3 border-red-500/20">
+                                <i class="fas fa-exclamation-circle text-3xl text-red-400"></i>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-start space-x-2.5">
-                        <div class="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-1 flex-shrink-0"></div>
-                        <div>
-                            <p class="text-xs-sm font-semibold text-white">Double Check</p>
-                            <p class="text-gray-400 text-xs">Verify table name</p>
+
+                        <!-- Title -->
+                        <div class="text-center mb-5">
+                            <h2 class="text-base-sm font-bold text-white mb-1">
+                                Confirm Table Deletion
+                            </h2>
+                            <p class="text-gray-400 text-xs-sm">
+                                Type the exact table name to confirm deletion
+                            </p>
                         </div>
-                    </div>
-                    <div class="flex items-start space-x-2.5">
-                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full mt-1 flex-shrink-0"></div>
-                        <div>
-                            <p class="text-xs-sm font-semibold text-white">No Recovery</p>
-                            <p class="text-gray-400 text-xs">Cannot be recovered</p>
+
+                        <!-- Selected Table Display -->
+                        <div id="selectedTableDisplay" class="mb-4" style="display: none;">
+                            <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+                                <p class="text-xs text-gray-300 mb-0.5">Selected table:</p>
+                                <p class="text-sm-sm font-bold text-blue-400" id="selectedTableName"></p>
+                            </div>
+                        </div>
+
+                        <!-- Table Name Input -->
+                        <div class="mb-4">
+                            <label class="block text-xs-sm font-semibold text-white mb-2 flex items-center">
+                                <i class="fas fa-table text-red-400 mr-2"></i>Table Name to Delete
+                            </label>
+                            <input type="text" 
+                                   name="deltable" 
+                                   id="tableNameInput"
+                                   placeholder="Enter exact table name (case-sensitive)"
+                                   class="input-danger w-full px-4 py-2.5 text-sm-sm rounded-lg"
+                                   required
+                                   autocomplete="off">
+                            <p class="text-xs text-gray-400 mt-1.5">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Type the table name exactly as it appears in the list
+                            </p>
+                        </div>
+
+                        <!-- Confirmation Checkbox -->
+                        <div class="mb-5">
+                            <label class="flex items-start space-x-3 cursor-none">
+                                <input type="checkbox" 
+                                       id="confirmCheckbox"
+                                       class="mt-1 w-4 h-4 rounded border-red-500/30 bg-slate-700/50 text-red-500 focus:ring-red-500/30 focus:ring-2">
+                                <span class="text-xs-sm text-gray-300 leading-relaxed">
+                                    I understand that this action is <span class="text-red-400 font-semibold">permanent and irreversible</span>. All data in this table will be permanently lost.
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-3">
+                            <button type="submit" 
+                                    class="btn btn-danger text-white px-5 py-3 rounded-lg text-sm-sm font-semibold inline-flex items-center justify-center flex-1" 
+                                    id="deleteBtn"
+                                    disabled>
+                                <i class="fas fa-trash-alt mr-2"></i>Delete Table Permanently
+                            </button>
+                            <a href="http://127.0.0.1:8000/show_tables/" 
+                               class="btn btn-primary text-white px-5 py-3 rounded-lg text-sm-sm font-semibold inline-flex items-center justify-center">
+                                <i class="fas fa-times mr-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Safety Guidelines Card -->
+                <div class="card-hover rounded-xl p-5 mt-6 max-w-2xl">
+                    <h3 class="text-xs-sm font-semibold text-white mb-3 flex items-center">
+                        <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                        Safety Guidelines
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="flex items-start space-x-2">
+                            <div class="w-1.5 h-1.5 bg-red-400 rounded-full mt-1.5"></div>
+                            <div>
+                                <p class="text-xs-sm font-semibold text-white mb-0.5">Backup First</p>
+                                <p class="text-gray-400 text-xs">Always create a backup before deletion</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <div class="w-1.5 h-1.5 bg-yellow-400 rounded-full mt-1.5"></div>
+                            <div>
+                                <p class="text-xs-sm font-semibold text-white mb-0.5">Verify Name</p>
+                                <p class="text-gray-400 text-xs">Double-check the table name</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <div class="w-1.5 h-1.5 bg-orange-400 rounded-full mt-1.5"></div>
+                            <div>
+                                <p class="text-xs-sm font-semibold text-white mb-0.5">No Recovery</p>
+                                <p class="text-gray-400 text-xs">Data cannot be recovered once deleted</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -418,7 +750,7 @@
         </div>
     </main>
 
-    <!-- Optimized JavaScript -->
+    <!-- JavaScript with Toast Functionality -->
     <script>
         // Performance-optimized cursor with requestAnimationFrame
         const cursor = document.querySelector('.custom-cursor');
@@ -480,13 +812,16 @@
             }, 10);
         };
 
+        // Setup hover listeners
+        const setupHoverListeners = () => {
+            document.querySelectorAll('a, button, input, select, .card-hover, .card-danger, .toast, .toast-close, .table-item').forEach(el => {
+                el.addEventListener('mouseenter', (e) => handleHover(e, true), { passive: true });
+                el.addEventListener('mouseleave', (e) => handleHover(e, false), { passive: true });
+            });
+        };
+
         // Event listeners with passive flags for better performance
         document.addEventListener('mousemove', handleMouseMove, { passive: true });
-
-        document.querySelectorAll('a, button, input, .card-hover').forEach(el => {
-            el.addEventListener('mouseenter', (e) => handleHover(e, true), { passive: true });
-            el.addEventListener('mouseleave', (e) => handleHover(e, false), { passive: true });
-        });
 
         document.addEventListener('mousedown', () => {
             cursor.style.width = '14px';
@@ -498,17 +833,303 @@
             cursor.style.height = '18px';
         }, { passive: true });
 
-        // Form confirmation
-        document.querySelector('form')?.addEventListener('submit', (e) => {
-            const tableName = document.querySelector('input[name="deltable"]').value;
-            if (!confirm(`⚠️ Delete table "${tableName}"?\n\nThis action CANNOT be undone!`)) {
-                e.preventDefault();
-            }
-        });
-
         // Initialize cursor position
         cursor.style.transform = `translate3d(${window.innerWidth/2}px, ${window.innerHeight/2}px, 0)`;
         cursorDot.style.transform = `translate3d(${window.innerWidth/2}px, ${window.innerHeight/2}px, 0)`;
+
+        // Initialize hover listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            setupHoverListeners();
+        });
+
+        // Modern Toast Notification System
+        class ToastManager {
+            constructor() {
+                this.container = document.querySelector('.toast-container');
+                this.toasts = new Set();
+            }
+
+            showToast(type, title, message, duration = 5000) {
+                const toastId = 'toast-' + Date.now();
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.id = toastId;
+                
+                let icon = '';
+                if (type === 'success') {
+                    icon = '<i class="fas fa-check-circle"></i>';
+                } else if (type === 'error') {
+                    icon = '<i class="fas fa-exclamation-circle"></i>';
+                } else if (type === 'warning') {
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                }
+
+                toast.innerHTML = `
+                    <div class="toast-content">
+                        <div class="toast-icon">
+                            ${icon}
+                        </div>
+                        <div class="toast-text">
+                            <div class="toast-title">${title}</div>
+                            <div class="toast-message">${message}</div>
+                        </div>
+                        <button class="toast-close" onclick="toastManager.removeToast('${toastId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+                `;
+
+                this.container.appendChild(toast);
+                this.toasts.add(toastId);
+
+                // Add hover listeners
+                toast.addEventListener('mouseenter', () => {
+                    const progressBar = toast.querySelector('.toast-progress');
+                    if (progressBar) {
+                        progressBar.style.animationPlayState = 'paused';
+                    }
+                });
+
+                toast.addEventListener('mouseleave', () => {
+                    const progressBar = toast.querySelector('.toast-progress');
+                    if (progressBar) {
+                        progressBar.style.animationPlayState = 'running';
+                    }
+                });
+
+                // Auto remove after duration
+                setTimeout(() => {
+                    this.removeToast(toastId);
+                }, duration);
+
+                // Re-setup hover listeners for new toast
+                setupHoverListeners();
+
+                return toastId;
+            }
+
+            removeToast(toastId) {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    toast.style.animation = 'toastSlideOut 0.3s forwards';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                        this.toasts.delete(toastId);
+                    }, 300);
+                }
+            }
+
+            showSuccess(message, title = 'Success!') {
+                return this.showToast('success', title, message);
+            }
+
+            showError(message, title = 'Error!') {
+                return this.showToast('error', title, message);
+            }
+
+            showWarning(message, title = 'Warning!') {
+                return this.showToast('warning', title, message, 7000);
+            }
+        }
+
+        // Initialize toast manager
+        const toastManager = new ToastManager();
+
+        // Table Selection
+        let selectedTable = '';
+
+        function selectTable(tableName) {
+            selectedTable = tableName;
+            
+            // Update all table items
+            document.querySelectorAll('.table-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Highlight selected
+            const selectedItem = document.querySelector(`[data-table="${tableName}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('selected');
+            }
+            
+            // Update input
+            document.getElementById('tableNameInput').value = tableName;
+            
+            // Show selected table display
+            document.getElementById('selectedTableDisplay').style.display = 'block';
+            document.getElementById('selectedTableName').textContent = tableName;
+            
+            // Show toast
+            toastManager.showSuccess(
+                `Click the checkbox and delete button to remove "${tableName}".`,
+                'Table Selected'
+            );
+            
+            // Update delete button state
+            updateDeleteButton();
+        }
+
+        // Search Functionality
+        const searchInput = document.getElementById('searchTables');
+        const tablesList = document.getElementById('tablesList');
+        const noResults = document.getElementById('noResults');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const tableItems = document.querySelectorAll('.table-item');
+                let visibleCount = 0;
+
+                tableItems.forEach(item => {
+                    const tableName = item.getAttribute('data-table').toLowerCase();
+                    
+                    if (tableName.includes(searchTerm)) {
+                        item.style.display = 'block';
+                        visibleCount++;
+                        
+                        // Highlight matching text
+                        if (searchTerm) {
+                            const nameSpan = item.querySelector('span');
+                            const originalName = item.getAttribute('data-table');
+                            const regex = new RegExp(`(${searchTerm})`, 'gi');
+                            nameSpan.innerHTML = originalName.replace(regex, '<span class="search-highlight">$1</span>');
+                        } else {
+                            const nameSpan = item.querySelector('span');
+                            nameSpan.textContent = item.getAttribute('data-table');
+                        }
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0 && searchTerm) {
+                    tablesList.style.display = 'none';
+                    noResults.style.display = 'block';
+                } else {
+                    tablesList.style.display = 'block';
+                    noResults.style.display = 'none';
+                }
+            });
+        }
+
+        // Enable/disable delete button based on checkbox and input
+        const confirmCheckbox = document.getElementById('confirmCheckbox');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const tableNameInput = document.getElementById('tableNameInput');
+
+        const updateDeleteButton = () => {
+            if (confirmCheckbox.checked && tableNameInput.value.trim() !== '') {
+                deleteBtn.disabled = false;
+                deleteBtn.style.opacity = '1';
+            } else {
+                deleteBtn.disabled = true;
+                deleteBtn.style.opacity = '0.5';
+            }
+        };
+
+        confirmCheckbox.addEventListener('change', updateDeleteButton);
+        tableNameInput.addEventListener('input', updateDeleteButton);
+
+        // Form submission handling with toast
+        document.getElementById('deleteTableForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const tableName = tableNameInput.value.trim();
+            
+            if (!confirmCheckbox.checked) {
+                toastManager.showWarning(
+                    'Please confirm that you understand this action is permanent.',
+                    'Confirmation Required'
+                );
+                return;
+            }
+
+            if (tableName === '') {
+                toastManager.showError(
+                    'Please enter the table name to proceed with deletion.',
+                    'Table Name Required'
+                );
+                tableNameInput.focus();
+                return;
+            }
+
+            // Verify table exists in the list
+            const tableExists = Array.from(document.querySelectorAll('.table-item')).some(
+                item => item.getAttribute('data-table') === tableName
+            );
+
+            if (!tableExists) {
+                toastManager.showError(
+                    `Table "${tableName}" does not exist in the current database.`,
+                    'Invalid Table Name'
+                );
+                return;
+            }
+
+            // Show final confirmation
+            const confirmed = confirm(`⚠️ FINAL WARNING ⚠️\n\nYou are about to permanently delete the table "${tableName}" and ALL its data.\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to proceed?`);
+            
+            if (!confirmed) {
+                toastManager.showSuccess(
+                    'Table deletion has been cancelled. Your data is safe.',
+                    'Action Cancelled'
+                );
+                return;
+            }
+
+            const deleteBtn = document.getElementById('deleteBtn');
+            const originalContent = deleteBtn.innerHTML;
+            
+            // Show loading state
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting Table...';
+            deleteBtn.disabled = true;
+            
+            // Show warning toast
+            toastManager.showWarning(
+                `Processing deletion of table "${tableName}"...`,
+                'Deleting...'
+            );
+
+            // Submit the form
+            this.submit();
+        });
+
+        // Show message from backend if exists
+        {% if message %}
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const message = `{{ message|escapejs }}`;
+                if (message.startsWith('✅')) {
+                    toastManager.showSuccess(
+                        message.replace('✅ ', ''),
+                        'Operation Complete'
+                    );
+                } else if (message.startsWith('❌')) {
+                    toastManager.showError(
+                        message.replace('❌ ', ''),
+                        'Error Occurred'
+                    );
+                }
+            }, 500);
+        });
+        {% else %}
+        // Demo: Show a warning toast on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                toastManager.showWarning(
+                    'You are in the danger zone. Please read all warnings carefully before proceeding.',
+                    'Caution Required!'
+                );
+            }, 1000);
+        });
+        {% endif %}
+
+        // Re-setup hover listeners
+        setupHoverListeners();
     </script>
 </body>
 </html>

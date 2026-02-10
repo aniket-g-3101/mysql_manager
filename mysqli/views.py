@@ -271,41 +271,72 @@ def create_table(request):
 
     # Initial GET request → show base form
     return render(request, "create_table.html", {"field_range": []})
+
+
 def delete_table(request):
     pas = request.session.get("mysql_password")
     db = request.session.get("current_db")
-    message = None  # default
-
-    if request.method == "POST":   # ✅ only delete on POST
-        name = request.POST.get("deltable")
-
-        if not name:
-            message = "❌ Please enter a table name."
+    message = None
+    tables = []  # Store list of tables
+    
+    try:
+        if not pas or not db:
+            message = "❌ Not connected to database. Please connect first."
         else:
-            try:
-                conn = mysql.connector.connect(
-                    host="localhost",
-                    user="root",
-                    password=pas,
-                    database=db
-                )
-                c1 = conn.cursor()
-
-                # ✅ safe table name with backticks
-                query = f"DROP TABLE `{name}`"
-                c1.execute(query)
-                conn.commit()
-
-                message = f"✅ Table '{name}' deleted successfully."
-            except Error as e:
-                message = f"❌ Error: {str(e)}"
-            finally:
-                if c1:
-                    c1.close()
-                if conn:
-                    conn.close()
-    return render(request, "delete_table.html", {"message": message})
-
+            # Connect to database
+            conn = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password=pas,
+                database=db
+            )
+            cursor = conn.cursor()
+            
+            # Get list of all tables in the database
+            cursor.execute("SHOW TABLES")
+            tables = [table[0] for table in cursor.fetchall()]
+            
+            if request.method == "POST":
+                name = request.POST.get("deltable")
+                
+                if not name:
+                    message = "❌ Please enter a table name."
+                elif name not in tables:
+                    message = f"❌ Table '{name}' does not exist in database '{db}'."
+                else:
+                    # ✅ Get table info before deletion
+                    cursor.execute(f"SELECT COUNT(*) FROM `{name}`")
+                    row_count = cursor.fetchone()[0]
+                    
+                    cursor.execute(f"SHOW TABLE STATUS LIKE '{name}'")
+                    table_info = cursor.fetchone()
+                    size_info = f"{table_info[6] / 1024:.1f} KB" if table_info and table_info[6] else "Unknown"
+                    
+                    # ✅ safe table name with backticks
+                    query = f"DROP TABLE `{name}`"
+                    cursor.execute(query)
+                    conn.commit()
+                    
+                    # Remove from tables list after deletion
+                    tables.remove(name)
+                    
+                    message = f"✅ Table '{name}' deleted successfully. (Rows: {row_count}, Size: {size_info})"
+            
+            cursor.close()
+            conn.close()
+            
+    except mysql.connector.Error as e:
+        message = f"❌ Database Error: {str(e)}"
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conn' in locals() and conn:
+            conn.close()
+    
+    return render(request, "delete_table.html", {
+        "message": message,
+        "tables": tables,
+        "database": db
+    })
 def edit_table(request):   
     table_name = request.session.get("selected_table")
     db_name = request.session.get("selected_db") 
