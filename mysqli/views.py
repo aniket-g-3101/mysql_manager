@@ -5,24 +5,32 @@ from django.shortcuts import render, redirect
 import mysql.connector
 from mysql.connector import Error
 
+from django.shortcuts import render, redirect
+import mysql.connector
+from mysql.connector import Error
+
 def login(request):
     if request.method == "POST":
         pas = request.POST.get("p", "").strip()
 
-        if pas=="":
+        if pas == "":
             return render(request, "login.html", {"field_error": "Password is required."})
-        
+
         try:
-            conn = mysql.connector.connect(host="localhost",user="root",password=pas,database=None)
+            conn = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password=pas
+            )
 
             if conn.is_connected():
                 request.session["mysql_password"] = pas
                 conn.close()
-                return redirect("http://127.0.0.1:8000/home/")
+                return redirect("/home/")
 
         except Error as e:
-            print("Error:", e)
-            return render(request, "login.html", {"error": "Wrong password. Please try again."})
+            print(e)   # IMPORTANT: show real error in terminal
+            return render(request, "login.html", {"error": str(e)})
 
     return render(request, "login.html")
 

@@ -70,6 +70,168 @@
             }
         }
 
+        /* Modern Toast Animations */
+        @keyframes toastSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(100%) translateY(-50%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) translateY(-50%);
+            }
+        }
+
+        @keyframes toastSlideOut {
+            0% {
+                opacity: 1;
+                transform: translateX(0) translateY(-50%);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100%) translateY(-50%);
+            }
+        }
+
+        @keyframes toastPulse {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(16, 185, 129, 0.5);
+            }
+        }
+
+        @keyframes progressBar {
+            0% {
+                width: 100%;
+            }
+            100% {
+                width: 0%;
+            }
+        }
+
+        /* Toast Container */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+        }
+
+        /* Modern Toast Styles */
+        .toast {
+            position: relative;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #10b981;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards,
+                       toastPulse 2s infinite 0.5s;
+            max-width: 380px;
+            overflow: hidden;
+            transform: translateY(-50%);
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+            animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .toast.error .toast-progress {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .toast.warning {
+            border-left-color: #f59e0b;
+            animation: toastSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .toast.warning .toast-progress {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast.success .toast-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+            color: #10b981;
+        }
+
+        .toast.error .toast-icon {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+            color: #ef4444;
+        }
+
+        .toast.warning .toast-icon {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+            color: #f59e0b;
+        }
+
+        .toast-text {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 0.75rem;
+            color: rgba(156, 163, 175, 0.9);
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: rgba(156, 163, 175, 0.7);
+            cursor: none;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+
+        .toast-close:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 0 0 0 8px;
+            animation: progressBar 5s linear forwards;
+        }
+
         /* Base styles */
         body {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -273,6 +435,9 @@
 </head>
 
 <body class="font-inter text-gray-200">
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+
     <!-- Custom Cursor -->
     <div class="custom-cursor"></div>
     <div class="cursor-dot"></div>
@@ -309,9 +474,7 @@
                         <i class="fas fa-edit mr-1"></i>Workshop
                     </a>
                     <div class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs-sm font-medium border border-emerald-400/25">
-                      
-                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                        </span>
+                        <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                         Connected
                     </div>
                 </div>
@@ -346,7 +509,7 @@
         <!-- Form Container -->
         <div class="max-w-xl mx-auto">
             <div class="card-hover rounded-2xl p-8">
-                <form action="/create_table/" method="post">
+                <form id="createTableForm" action="/create_table/" method="post">
                     {% csrf_token %}
 
                     <!-- Table Name -->
@@ -356,6 +519,7 @@
                         </label>
                         <input type="text" 
                                name="tableName" 
+                               id="tableName"
                                placeholder="Enter table name (e.g., users, products)"
                                class="input-glow w-full px-4 py-3 text-sm-sm rounded-lg"
                                required>
@@ -385,7 +549,7 @@
 
                     <!-- Submit Button -->
                     <div class="flex gap-3">
-                        <button type="submit" class="btn btn-success text-white px-6 py-3.5 rounded-lg text-sm-sm font-semibold inline-flex items-center flex-1">
+                        <button type="submit" class="btn btn-success text-white px-6 py-3.5 rounded-lg text-sm-sm font-semibold inline-flex items-center flex-1" id="submitBtn">
                             <i class="fas fa-check-circle mr-2"></i>Create Table
                         </button>
                         <a href="http://127.0.0.1:8000/show_tables/" class="btn btn-primary text-white px-6 py-3.5 rounded-lg text-sm-sm font-semibold inline-flex items-center justify-center">
@@ -428,7 +592,7 @@
         </div>
     </main>
 
-    <!-- Optimized JavaScript (Same as Delete Table) -->
+    <!-- JavaScript with Toast Functionality -->
     <script>
         // Performance-optimized cursor with requestAnimationFrame
         const cursor = document.querySelector('.custom-cursor');
@@ -496,7 +660,7 @@
 
         // Setup hover listeners
         const setupHoverListeners = () => {
-            document.querySelectorAll('a, button, input, select, .card-hover, .field-group').forEach(el => {
+            document.querySelectorAll('a, button, input, select, .card-hover, .field-group, .toast, .toast-close').forEach(el => {
                 el.addEventListener('mouseenter', (e) => handleHover(e, true), { passive: true });
                 el.addEventListener('mouseleave', (e) => handleHover(e, false), { passive: true });
             });
@@ -593,6 +757,154 @@
             // Re-setup hover listeners for new elements
             setupHoverListeners();
         });
+
+        // Modern Toast Notification System
+        class ToastManager {
+            constructor() {
+                this.container = document.querySelector('.toast-container');
+                this.toasts = new Set();
+            }
+
+            showToast(type, title, message, duration = 5000) {
+                const toastId = 'toast-' + Date.now();
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.id = toastId;
+                
+                let icon = '';
+                if (type === 'success') {
+                    icon = '<i class="fas fa-check-circle"></i>';
+                } else if (type === 'error') {
+                    icon = '<i class="fas fa-exclamation-circle"></i>';
+                } else if (type === 'warning') {
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                }
+
+                toast.innerHTML = `
+                    <div class="toast-content">
+                        <div class="toast-icon">
+                            ${icon}
+                        </div>
+                        <div class="toast-text">
+                            <div class="toast-title">${title}</div>
+                            <div class="toast-message">${message}</div>
+                        </div>
+                        <button class="toast-close" onclick="toastManager.removeToast('${toastId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+                `;
+
+                this.container.appendChild(toast);
+                this.toasts.add(toastId);
+
+                // Add hover listeners
+                toast.addEventListener('mouseenter', () => {
+                    const progressBar = toast.querySelector('.toast-progress');
+                    if (progressBar) {
+                        progressBar.style.animationPlayState = 'paused';
+                    }
+                });
+
+                toast.addEventListener('mouseleave', () => {
+                    const progressBar = toast.querySelector('.toast-progress');
+                    if (progressBar) {
+                        progressBar.style.animationPlayState = 'running';
+                    }
+                });
+
+                // Auto remove after duration
+                setTimeout(() => {
+                    this.removeToast(toastId);
+                }, duration);
+
+                return toastId;
+            }
+
+            removeToast(toastId) {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    toast.style.animation = 'toastSlideOut 0.3s forwards';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                        this.toasts.delete(toastId);
+                    }, 300);
+                }
+            }
+
+            showSuccess(message, title = 'Success!') {
+                return this.showToast('success', title, message);
+            }
+
+            showError(message, title = 'Error!') {
+                return this.showToast('error', title, message);
+            }
+
+            showWarning(message, title = 'Warning!') {
+                return this.showToast('warning', title, message, 7000);
+            }
+        }
+
+        // Initialize toast manager
+        const toastManager = new ToastManager();
+
+        // Form submission handling with toast
+        document.getElementById('createTableForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalContent = submitBtn.innerHTML;
+            const tableName = document.getElementById('tableName').value;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Table...';
+            submitBtn.disabled = true;
+            
+            // Simulate form submission (replace with actual fetch/XMLHttpRequest)
+            setTimeout(() => {
+                // Success toast
+                toastManager.showSuccess(
+                    `Table "${tableName}" has been created successfully with ${fieldCountInput.value} fields.`,
+                    'Table Created!'
+                );
+                
+                // Reset form
+                this.reset();
+                fieldsContainer.innerHTML = '';
+                
+                // Reset button state
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+                
+                // Show additional info toast
+                setTimeout(() => {
+                    toastManager.showSuccess(
+                        'You can now view your table in the Workshop area.',
+                        'Next Steps'
+                    );
+                }, 1000);
+                
+            }, 1500);
+            
+            // For demo purposes only - in production, you would use actual form submission
+            // this.submit();
+        });
+
+        // Demo: Show a welcome toast on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                toastManager.showSuccess(
+                    'Welcome to the Table Creator! Fill in the details to create your new database table.',
+                    'Ready to Create'
+                );
+            }, 1000);
+        });
+
+        // Re-setup hover listeners for new elements (including toasts)
+        setupHoverListeners();
     </script>
 </body>
 </html>
