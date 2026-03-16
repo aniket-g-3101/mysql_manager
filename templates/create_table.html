@@ -850,45 +850,52 @@
 
         // Initialize toast manager
         const toastManager = new ToastManager();
+document.getElementById('createTableForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-        // Form submission handling with toast
-        document.getElementById('createTableForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const originalContent = submitBtn.innerHTML;
-            const tableName = document.getElementById('tableName').value;
-            
-            // Show loading state
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Table...';
-            submitBtn.disabled = true;
-            
-            // Simulate form submission (replace with actual fetch/XMLHttpRequest)
-            setTimeout(() => {
-                // Success toast
-                toastManager.showSuccess(
-                    `Table "${tableName}" has been created successfully with ${fieldCountInput.value} fields.`,
-                    'Table Created!'
-                );
-                
-                // Reset form
-                this.reset();
-                fieldsContainer.innerHTML = '';
-                
-                // Reset button state
-                submitBtn.innerHTML = originalContent;
-                submitBtn.disabled = false;
-                
-                // Show additional info toast
-                setTimeout(() => {
-                    toastManager.showSuccess(
-                        'You can now view your table in the Workshop area.',
-                        'Next Steps'
-                    );
-                }, 1000);
-                
-            }, 1500);
-            
+    const submitBtn = document.getElementById('submitBtn');
+    const originalContent = submitBtn.innerHTML;
+    const tableName = document.getElementById('tableName').value;
+    const count = parseInt(fieldCountInput.value) || 0;
+
+    if (!tableName) {
+        toastManager.showError('Please enter a table name.', 'Missing Field');
+        return;
+    }
+    if (!count) {
+        toastManager.showError('Please specify the number of fields.', 'Missing Field');
+        return;
+    }
+
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Table...';
+    submitBtn.disabled = true;
+
+    const formData = new FormData(this);
+
+    fetch('/create_table/', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(res => res.text())
+    .then(text => {
+        if (text.startsWith('✅')) {
+            toastManager.showSuccess(
+                `Table "${tableName}" created successfully with ${count} field${count > 1 ? 's' : ''}.`,
+                'Table Created!'
+            );
+            this.reset();
+            fieldsContainer.innerHTML = '';
+        } else {
+            toastManager.showError(text.replace('❌ ', ''), 'Creation Failed');
+        }
+        submitBtn.innerHTML = originalContent;
+        submitBtn.disabled = false;
+    })
+    .catch(err => {
+        toastManager.showError('Network error. Please try again.', 'Error');
+        submitBtn.innerHTML = originalContent;
+        submitBtn.disabled = false;
+    });
             // For demo purposes only - in production, you would use actual form submission
             // this.submit();
         });

@@ -232,46 +232,35 @@ def create_table(request):
         pas = request.session.get("mysql_password")
         db = request.session.get("current_db")
         table_name = request.POST.get("tableName")
-        field_count = request.POST.get("fieldCount")
 
-        
-        # First step: user entered only table name & field count
-        if field_count and not request.POST.get("fieldName1"):
-            try:
-                field_count = int(field_count)
-            except ValueError:
-                return HttpResponse("❌ Invalid number of fields.")
+        try:
+            field_count = int(request.POST.get("fieldCount", 0))
+        except ValueError:
+            return HttpResponse("❌ Invalid number of fields.")
 
-            return render(request, "create_table.html", {"field_range": range(1, field_count + 1),"table_name": table_name,"field_count": field_count})
+        if not field_count:
+            return HttpResponse("❌ Field count missing or invalid.")
 
-        # Second step: user submitted field names and types
-        elif request.POST.get("fieldName1"):
-            try:
-                field_count = int(request.POST.get("fieldCount"))
-            except (ValueError, TypeError):
-                return HttpResponse("❌ Field count missing or invalid.")
+        fields = []
+        for i in range(1, field_count + 1):
+            fname = request.POST.get(f"fieldName{i}")
+            ftype = request.POST.get(f"fieldType{i}")
+            if not fname or not ftype:
+                return HttpResponse(f"❌ Missing name or type for field {i}.")
+            fields.append(f"`{fname}` {ftype}")
 
-            fields = []
-            for i in range(1, field_count + 1):
-                fname = request.POST.get(f"fieldName{i}")
-                ftype = request.POST.get(f"fieldType{i}")
-                if not fname or not ftype:
-                    return HttpResponse(f"❌ Missing name or type for field {i}.")
-                fields.append(f"{fname} {ftype}")
+        q = f"CREATE TABLE `{table_name}` ({', '.join(fields)})"
+        try:
+            conn = mysql.connector.connect(host="localhost", user="root", password=pas, database=db)
+            c1 = conn.cursor()
+            c1.execute(q)
+            conn.commit()
+            conn.close()
+            return HttpResponse(f"✅ Table '{table_name}' created successfully.")
+        except Exception as e:
+            return HttpResponse(f"❌ Error: {e}")
 
-            q = f"CREATE TABLE {table_name} ({', '.join(fields)})"
-
-            try:
-                conn = mysql.connector.connect(host="localhost", user="root", password=pas, database=db)
-                c1 = conn.cursor()
-                c1.execute(q)
-                return HttpResponse(f"✅ Table '{table_name}' created successfully.")
-            except Exception as e:
-                return HttpResponse(f"❌ Error: {e}")
-
-    # Initial GET request → show base form
-    return render(request, "create_table.html", {"field_range": []})
-
+    return render(request, "create_table.html")
 
 def delete_table(request):
     pas = request.session.get("mysql_password")
